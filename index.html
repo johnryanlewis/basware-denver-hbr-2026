@@ -353,6 +353,7 @@ onValue(STATE_REF, (snapshot) => {
     appState = data;
     if (!Array.isArray(appState.aes)) appState.aes = DEFAULT_AES.map(n=>({name:n,deals:[]}));
     appState.aes.forEach(ae => { if (!Array.isArray(ae.deals)) ae.deals = []; });
+    appState.aes.sort((a, b) => lastName(a.name).localeCompare(lastName(b.name)));
   }
   if (currentView === "loading") {
     document.getElementById("loading").classList.add("hidden");
