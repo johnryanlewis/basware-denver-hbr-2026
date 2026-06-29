@@ -6,11 +6,13 @@
 <title>The Deals That Make It All Just Happen — North America</title>
 <style>
   @font-face{font-family:'Inter';src:url('../_ds/basware-brand-7e62478d-2a59-42a0-9052-8e7b9c1c1f62/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;}
+  @font-face{font-family:'InterDisplay';src:url('../_ds/basware-brand-7e62478d-2a59-42a0-9052-8e7b9c1c1f62/fonts/InterDisplay-ExtraBold.woff2') format('woff2');font-weight:800;font-style:normal;}
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;}
   ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#6404DA;border-radius:3px;}
   input,textarea,select{font-family:inherit;}
   input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.3);}
+  input:focus,textarea:focus,select:focus{outline:1px solid #04D3AA;outline-offset:2px;}
   @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -19,10 +21,11 @@
   .hidden{display:none!important;}
 
   /* ── Chooser ── */
-  #chooser{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
-  .chooser-inner{text-align:center;max-width:440px;width:100%;}
+  #chooser{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;}
+  #chooser::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:520px;height:520px;background:url('assets/tick/tick-white.svg') center/contain no-repeat;opacity:0.05;pointer-events:none;}
+  .chooser-inner{text-align:center;max-width:440px;width:100%;position:relative;z-index:1;}
   .chooser-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
-  .chooser-title{font-size:28px;font-weight:900;line-height:1.1;letter-spacing:-0.02em;text-wrap:balance;margin-bottom:6px;}
+  .chooser-title{font-family:'InterDisplay',system-ui,sans-serif;font-size:44px;font-weight:800;line-height:1.0;letter-spacing:-0.03em;text-wrap:balance;margin-bottom:8px;}
   .chooser-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;letter-spacing:1px;}
   .chooser-divider{width:40px;height:2px;background:#6404DA;margin:0 auto 32px;}
   .chooser-btn{width:100%;border:none;border-radius:2px;padding:17px 24px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:12px;letter-spacing:0.3px;transition:opacity 0.2s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
@@ -66,7 +69,8 @@
   .workspace{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
   .workspace-empty{color:rgba(255,255,255,0.4);font-size:15px;margin-top:40px;text-align:center;}
 
-  .ae-banner{background:#6404DA;border-radius:2px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+  .ae-banner{background:#6404DA;border-radius:2px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;}
+  .ae-banner::after{content:'';position:absolute;right:-18px;bottom:-22px;width:120px;height:120px;background:url('assets/tick/tick-mint.svg') center/contain no-repeat;opacity:0.14;pointer-events:none;}
   .ae-banner-label{font-size:11px;color:#04D3AA;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
   .ae-banner-name{font-size:24px;font-weight:900;margin-top:4px;letter-spacing:-0.02em;}
   .ae-banner-meta{font-size:12px;color:rgba(255,255,255,0.6);}
@@ -104,10 +108,11 @@
   /* Spotlight mode */
   .fac-spotlight-wrap{display:flex;flex:1;overflow:hidden;}
   .spotlight-main{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
-  .spotlight-hero{background:#120A48;border:1px solid rgba(255,255,255,0.1);border-top:4px solid #6404DA;border-radius:2px;padding:28px 32px;position:relative;}
-  .spotlight-live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(250,100,150,0.15);border:1px solid #FA6496;border-radius:4px;padding:4px 12px;font-size:11px;font-weight:700;color:#FA6496;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;animation:pulse 1.5s infinite;}
+  .spotlight-hero{background:#120A48;border:1px solid rgba(255,255,255,0.1);border-top:4px solid #6404DA;border-radius:2px;padding:28px 32px;position:relative;overflow:hidden;isolation:isolate;}
+  .spotlight-hero::after{content:'';position:absolute;right:0;top:0;bottom:0;width:44%;background:url('assets/patterns/tick-pattern-white.svg') center/cover;opacity:0.07;pointer-events:none;z-index:-1;border-radius:0 2px 2px 0;}
+  .spotlight-live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(250,100,150,0.15);border:1px solid #FA6496;border-radius:4px;padding:10px 20px;font-size:13px;font-weight:700;color:#FA6496;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:20px;animation:pulse 1.5s infinite;}
   .spotlight-ae-name{font-size:14px;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:6px;}
-  .spotlight-deal-name{font-size:36px;font-weight:900;line-height:1.1;margin-bottom:16px;letter-spacing:-0.03em;text-wrap:balance;}
+  .spotlight-deal-name{font-family:'InterDisplay',system-ui,sans-serif;font-size:56px;font-weight:800;line-height:1.0;margin-bottom:20px;letter-spacing:-0.03em;text-wrap:balance;}
   .spotlight-tags{display:flex;gap:10px;flex-wrap:wrap;}
   .spotlight-tag-arr{background:rgba(4,211,170,0.15);color:#04D3AA;border:1px solid rgba(4,211,170,0.4);border-radius:4px;padding:5px 14px;font-size:13px;font-weight:700;}
   .spotlight-tag-close{background:rgba(100,4,218,0.2);color:#a56cf5;border:1px solid rgba(100,4,218,0.4);border-radius:4px;padding:5px 14px;font-size:13px;font-weight:700;}
@@ -157,7 +162,7 @@
   .stats-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;}
   .stat-box{background:#1c1262;border-radius:2px;padding:10px 12px;}
   .stat-box-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;}
-  .stat-box-value{font-size:26px;font-weight:900;margin-top:2px;}
+  .stat-box-value{font-size:32px;font-weight:900;margin-top:2px;}
   .live-stat-box{background:rgba(250,100,150,0.13);border:1px solid #FA6496;border-radius:2px;padding:10px 12px;margin-top:4px;}
   .live-stat-label{font-size:10px;font-weight:700;color:#FA6496;letter-spacing:1.5px;text-transform:uppercase;}
   .live-stat-ae{font-size:13px;font-weight:700;color:#fff;margin-top:4px;}
@@ -271,14 +276,14 @@
   /* Loading */
   #loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;}
   .spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.1);border-top-color:#6404DA;border-radius:50%;animation:spin 0.8s linear infinite;}
-  .loading-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;}
+  .loading-logo{width:130px;opacity:0.92;margin-bottom:4px;}
   .loading-text{font-size:13px;color:rgba(255,255,255,0.4);}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="loading">
-    <div class="loading-brand">BASWARE</div>
+    <img class="loading-logo" src="assets/logo/basware-wordmark-white.png" alt="Basware"/>
     <div class="spinner"></div>
     <div class="loading-text">Connecting to session…</div>
   </div>
