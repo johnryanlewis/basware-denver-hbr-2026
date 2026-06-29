@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"/>
-<title>The Deals That Make It All Just Happen — North America</title>
+<title>The Deals That Make It All Just Happen - North America</title>
 <style>
   
   
@@ -333,7 +333,7 @@ let currentView = "loading";
 
 async function saveState(s) {
   appState = s;
-  // Firebase rejects null values in nested objects — strip them out before writing
+  // Firebase rejects null values in nested objects - strip them out before writing
   const clean = JSON.parse(JSON.stringify(s, (key, val) => val === null ? undefined : val));
   try {
     await set(STATE_REF, clean);
@@ -384,9 +384,9 @@ function renderChooser() {
       <div class="chooser-title">The Deals That Make It<br>All Just Happen</div>
       <div class="chooser-sub">North America · Mile High Focus · Denver HBR</div>
       <div class="chooser-divider"></div>
-      <button id="btn-facilitator" class="chooser-btn btn-purple">Facilitator — Big Screen</button>
-      <button id="btn-audience" class="chooser-btn btn-teal">Submit Ideas — Audience</button>
-      <button id="btn-aeview" class="chooser-btn btn-pink">View My Deals — AEs</button>
+      <button id="btn-facilitator" class="chooser-btn btn-purple">Facilitator - Big Screen</button>
+      <button id="btn-audience" class="chooser-btn btn-teal">Submit Ideas - Audience</button>
+      <button id="btn-aeview" class="chooser-btn btn-pink">View My Deals - AEs</button>
       <div class="chooser-note">
         Facilitators run the big screen.<br>
         Audience: submit ideas to any deal, any time.<br>
@@ -447,7 +447,7 @@ function renderFacilitator() {
       : [...spotSubs].reverse().map(s=>`
           <div class="spotlight-sub-item">
             <div class="spotlight-sub-text">${esc(s.text)}</div>
-            <div class="spotlight-sub-meta">— ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
+            <div class="spotlight-sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
           </div>`).join("");
 
     const otherDealsHTML = otherDeals.length===0
@@ -497,7 +497,7 @@ function renderFacilitator() {
             <div class="spotlight-stat-label">Total Contributors</div>
             <div class="spotlight-stat-value" style="color:#04D3AA">${totalContribs}</div>
           </div>
-          <div class="spotlight-other-label" style="margin-top:8px;">Other Deals — ${esc(appState.spotlightAE?.split(' ')[0]||'')}</div>
+          <div class="spotlight-other-label" style="margin-top:8px;">Other Deals - ${esc(appState.spotlightAE?.split(' ')[0]||'')}</div>
           ${otherDealsHTML}
         </div>
       </div>
@@ -541,7 +541,7 @@ function renderFacilitator() {
       if(isSpotlit&&subs.length>0){
         subsHTML=`<div class="deal-subs">${[...subs].reverse().map(s=>`
           <div class="sub-item"><div class="sub-text">${esc(s.text)}</div>
-          <div class="sub-meta">— ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div></div>`).join("")}</div>`;
+          <div class="sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div></div>`).join("")}</div>`;
       }
       if(isSpotlit&&subs.length===0) subsHTML=`<div class="deal-waiting">Waiting for ideas…</div>`;
       return `<div class="deal-card${isSpotlit?' live':''}">
@@ -807,7 +807,7 @@ function buildSummary(){
         ${subs.length===0?`<div class="summary-empty">No submissions yet.</div>`:''}
         ${subs.map(s=>`<div class="summary-sub-item">
           <div class="summary-sub-text">${esc(s.text)}</div>
-          <div class="summary-sub-meta">— ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
+          <div class="summary-sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
         </div>`).join("")}
       </div>`;
     }).join("");
@@ -885,7 +885,7 @@ function renderAudience(){
   // Build AE/deal browser (always shown below form)
   const aesWithDeals=appState.aes.filter(ae=>(ae.deals||[]).length>0);
   const browserHTML=aesWithDeals.length===0
-    ?`<div style="color:rgba(255,255,255,0.25);font-size:13px;font-style:italic;margin-top:10px;">No deals added yet — check back shortly.</div>`
+    ?`<div style="color:rgba(255,255,255,0.25);font-size:13px;font-style:italic;margin-top:10px;">No deals added yet - check back shortly.</div>`
     :aesWithDeals.map(ae=>{
       const isExpanded=audExpandedAE===ae.name;
       const subCount=(ae.deals||[]).reduce((a,d)=>a+(d.submissions||[]).length,0);
@@ -966,7 +966,7 @@ function renderAudience(){
     <div class="aud-body">
       ${formHTML}
       <div style="margin-top:${formHTML?'24px':'0'}">
-        <div class="aud-section-label">${formHTML?'Or submit to another deal:':'All Deals — Tap to submit an idea'}</div>
+        <div class="aud-section-label">${formHTML?'Or submit to another deal:':'All Deals - Tap to submit an idea'}</div>
         <div class="aud-ae-grid">${browserHTML}</div>
       </div>
     </div>
@@ -984,7 +984,7 @@ function renderAudience(){
     });
   });
 
-  // Bind deal select — manual pick overrides spotlight auto-select
+  // Bind deal select - manual pick overrides spotlight auto-select
   document.querySelectorAll(".aud-deal-row").forEach(el=>{
     el.addEventListener("click",()=>{
       audSelectedAE=decodeURIComponent(el.dataset.ae);
@@ -998,7 +998,7 @@ function renderAudience(){
   const nameInput=document.getElementById("aud-name-input");
   const textInput=document.getElementById("aud-text-input");
   const submitBtn=document.getElementById("aud-submit-btn");
-  // "Change" name link — clears saved name and re-renders to show input
+  // "Change" name link - clears saved name and re-renders to show input
   document.getElementById("aud-change-name-btn")?.addEventListener("click",()=>{
     audName="";
     try{ localStorage.removeItem("hbr-aud-name"); }catch{}
@@ -1062,10 +1062,10 @@ function renderAEView(){
       const isOpen=aeViewOpenDeal===deal.id;
       const subs=(deal.submissions||[]);
       const subsHTML=isOpen?(subs.length===0
-        ?`<div class="aeview-no-subs">No ideas submitted yet — check back later.</div>`
+        ?`<div class="aeview-no-subs">No ideas submitted yet - check back later.</div>`
         :subs.map(s=>`<div class="aeview-sub">
           <div class="aeview-sub-text">${esc(s.text)}</div>
-          <div class="aeview-sub-meta">— ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
+          <div class="aeview-sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
         </div>`).join("")):'';
       return `<div class="aeview-deal">
         <div class="aeview-deal-header${isOpen?' open':''}" data-dealid="${deal.id}">
