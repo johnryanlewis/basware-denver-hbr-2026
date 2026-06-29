@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>The Deals That Make It All Just Happen — North America</title>
 <style>
+  @font-face{font-family:'Inter';src:url('../_ds/basware-brand-7e62478d-2a59-42a0-9052-8e7b9c1c1f62/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;}
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Segoe UI',system-ui,sans-serif;background:#0D0D2B;color:#fff;min-height:100vh;}
-  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#6B00D7;border-radius:3px;}
+  body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#6404DA;border-radius:3px;}
   input,textarea,select{font-family:inherit;}
-  input::placeholder,textarea::placeholder{color:#4444AA;}
+  input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.3);}
   @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -20,260 +21,258 @@
   /* ── Chooser ── */
   #chooser{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
   .chooser-inner{text-align:center;max-width:440px;width:100%;}
-  .chooser-brand{font-size:13px;font-weight:700;color:#00C9A7;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
-  .chooser-title{font-size:28px;font-weight:900;line-height:1.2;margin-bottom:6px;}
-  .chooser-sub{font-size:12px;color:#8888AA;margin-bottom:10px;letter-spacing:1px;}
-  .chooser-divider{width:40px;height:2px;background:#6B00D7;margin:0 auto 32px;}
-  .chooser-btn{width:100%;border:none;border-radius:10px;padding:17px 24px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:12px;letter-spacing:0.5px;transition:opacity 0.2s;}
-  .btn-purple{background:#6B00D7;color:#fff;}
-  .btn-teal{background:#00C9A7;color:#0D0D2B;}
-  .btn-pink{background:#FF4D8D;color:#fff;}
-  .chooser-note{margin-top:24px;font-size:11px;color:#333366;line-height:1.8;}
+  .chooser-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+  .chooser-title{font-size:28px;font-weight:900;line-height:1.1;letter-spacing:-0.02em;text-wrap:balance;margin-bottom:6px;}
+  .chooser-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;letter-spacing:1px;}
+  .chooser-divider{width:40px;height:2px;background:#6404DA;margin:0 auto 32px;}
+  .chooser-btn{width:100%;border:none;border-radius:2px;padding:17px 24px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:12px;letter-spacing:0.3px;transition:opacity 0.2s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .chooser-btn:active{transform:translateY(1px);}
+  .btn-purple{background:#6404DA;color:#fff;}
+  .btn-teal{background:#04D3AA;color:#120A48;}
+  .btn-pink{background:#FA6496;color:#fff;}
+  .chooser-note{margin-top:24px;font-size:12px;color:rgba(255,255,255,0.3);line-height:1.8;}
 
   /* ── Facilitator ── */
   #fac{display:flex;flex-direction:column;height:100vh;}
-  .fac-topbar{background:#1A1A4E;border-bottom:2px solid #6B00D7;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
-  .fac-title{font-size:19px;font-weight:900;letter-spacing:-0.5px;}
-  .fac-subtitle{font-size:11px;color:#00C9A7;font-weight:700;letter-spacing:1.5px;margin-top:3px;}
+  .fac-topbar{background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.12);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .fac-title{font-size:19px;font-weight:900;letter-spacing:-0.02em;}
+  .fac-subtitle{font-size:11px;color:#04D3AA;font-weight:700;letter-spacing:1.5px;margin-top:3px;}
   .topbar-right{display:flex;gap:10px;align-items:center;}
-  .brand-tag .name{font-size:12px;font-weight:700;color:#00C9A7;letter-spacing:2px;}
-  .brand-tag .tagline{font-size:10px;color:#8888AA;}
-  .btn-summary{background:transparent;color:#00C9A7;border:1px solid #00C9A7;border-radius:7px;padding:7px 14px;font-weight:700;font-size:12px;cursor:pointer;}
-  .btn-summary.active{background:#00C9A7;color:#0D0D2B;}
+  .brand-tag .name{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:2px;}
+  .brand-tag .tagline{font-size:10px;color:rgba(255,255,255,0.4);}
+  .btn-summary{background:transparent;color:#04D3AA;border:1px solid #04D3AA;border-radius:2px;padding:7px 14px;font-weight:700;font-size:12px;cursor:pointer;transition:background 0.12s,color 0.12s;}
+  .btn-summary.active{background:#04D3AA;color:#120A48;}
   .fac-body{display:flex;flex:1;overflow:hidden;}
 
   /* Sidebar */
-  .sidebar{width:215px;background:#1A1A4E;border-right:1px solid #2D2D6B;display:flex;flex-direction:column;flex-shrink:0;}
-  .sidebar-label{padding:12px 14px 8px;font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;}
+  .sidebar{width:215px;background:#1c1262;border-right:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;flex-shrink:0;}
+  .sidebar-label{padding:12px 14px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;}
   .sidebar-list{flex:1;overflow-y:auto;}
-  .ae-item{padding:9px 14px;cursor:pointer;border-left:3px solid transparent;transition:background 0.15s;}
-  .ae-item:hover{background:#1E1E5A;}
-  .ae-item.active{border-left-color:#00C9A7;background:#1E1E5A;}
-  .ae-item .ae-name{font-size:13px;font-weight:500;color:#8888AA;}
+  .ae-item{padding:9px 14px;cursor:pointer;border-left:2px solid transparent;transition:background 0.12s;}
+  .ae-item:hover{background:rgba(255,255,255,0.05);}
+  .ae-item.active{border-left-color:#04D3AA;background:rgba(255,255,255,0.07);}
+  .ae-item .ae-name{font-size:13px;font-weight:500;color:rgba(255,255,255,0.5);}
   .ae-item.active .ae-name{font-weight:700;color:#fff;}
-  .ae-item .ae-meta{font-size:10px;color:#4444AA;margin-top:2px;}
-  .ae-item.active .ae-meta{color:#00C9A7;}
-  .sidebar-add{padding:10px 14px;border-top:1px solid #2D2D6B;}
-  .sidebar-add-label{font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+  .ae-item .ae-meta{font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px;}
+  .ae-item.active .ae-meta{color:#04D3AA;}
+  .sidebar-add{padding:10px 14px;border-top:1px solid rgba(255,255,255,0.1);}
+  .sidebar-add-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
   .sidebar-add-row{display:flex;gap:6px;}
-  .sidebar-add-input{flex:1;background:#0D0D2B;border:1px solid #2D2D6B;border-radius:6px;color:#fff;font-size:12px;padding:6px 8px;outline:none;}
-  .sidebar-add-btn{background:#6B00D7;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;}
+  .sidebar-add-input{flex:1;background:#120A48;border:1px solid rgba(255,255,255,0.15);border-radius:2px;color:#fff;font-size:12px;padding:6px 8px;outline:none;}
+  .sidebar-add-btn{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:6px 10px;font-size:13px;font-weight:700;cursor:pointer;}
 
   /* Workspace */
   .fac-main{flex:1;display:flex;overflow:hidden;}
   .workspace{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
-  .workspace-empty{color:#8888AA;font-size:15px;margin-top:40px;text-align:center;}
+  .workspace-empty{color:rgba(255,255,255,0.4);font-size:15px;margin-top:40px;text-align:center;}
 
-  .ae-banner{background:linear-gradient(90deg,#6B00D7,#4A0099);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
-  .ae-banner-label{font-size:11px;color:#00C9A7;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
-  .ae-banner-name{font-size:24px;font-weight:900;margin-top:4px;}
+  .ae-banner{background:#6404DA;border-radius:2px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+  .ae-banner-label{font-size:11px;color:#04D3AA;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+  .ae-banner-name{font-size:24px;font-weight:900;margin-top:4px;letter-spacing:-0.02em;}
   .ae-banner-meta{font-size:12px;color:rgba(255,255,255,0.6);}
 
-  .add-deal-card{background:#1A1A4E;border-radius:10px;padding:14px 16px;border:1px solid #2D2D6B;}
-  .add-deal-label{font-size:10px;font-weight:700;color:#00C9A7;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .add-deal-card{background:#1c1262;border-radius:2px;padding:14px 16px;border:1px solid rgba(255,255,255,0.1);}
+  .add-deal-label{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
   .add-deal-row{display:flex;gap:8px;flex-wrap:wrap;}
-  .add-deal-input{flex:2;min-width:160px;background:#0D0D2B;border:1px solid #6B00D7;border-radius:8px;color:#fff;font-size:14px;font-weight:600;padding:9px 12px;outline:none;}
-  .add-deal-arr{width:130px;background:#0D0D2B;border:1px solid #6B00D7;border-radius:8px;color:#fff;font-size:14px;padding:9px 12px;outline:none;}
-  .add-deal-select{width:100px;background:#0D0D2B;border:1px solid #6B00D7;border-radius:8px;color:#fff;font-size:14px;padding:9px 10px;outline:none;}
-  .add-deal-btn{background:#6B00D7;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;}
+  .add-deal-input{flex:2;min-width:160px;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;font-weight:600;padding:9px 12px;outline:none;}
+  .add-deal-arr{width:130px;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;padding:9px 12px;outline:none;}
+  .add-deal-select{width:100px;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;padding:9px 10px;outline:none;}
+  .add-deal-btn{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
   .add-deal-btn:disabled{opacity:0.4;cursor:default;}
+  .add-deal-btn:not(:disabled):active{transform:translateY(1px);}
 
-  .deal-card{background:#1A1A4E;border:1px solid #2D2D6B;border-radius:10px;padding:14px 16px;animation:fadeSlide 0.25s ease;}
-  .deal-card.live{background:#1A0040;border-color:#6B00D7;}
+  .deal-card{background:#1c1262;border:1px solid rgba(255,255,255,0.1);border-top:4px solid rgba(255,255,255,0.12);border-radius:2px;padding:14px 16px;animation:fadeSlide 0.25s cubic-bezier(.2,.6,.2,1);}
+  .deal-card.live{border-top-color:#6404DA;}
   .deal-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
   .deal-header-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1;}
-  .live-pill{background:#FF4D8D;color:#fff;font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;letter-spacing:1px;animation:pulse 1.5s infinite;white-space:nowrap;}
+  .live-pill{background:#FA6496;color:#fff;font-size:10px;font-weight:700;border-radius:4px;padding:2px 8px;letter-spacing:1px;animation:pulse 1.5s infinite;white-space:nowrap;}
   .deal-name{font-weight:700;font-size:15px;}
   .deal-tags{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;}
-  .deal-tag{font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600;}
-  .tag-arr{background:rgba(0,201,167,0.15);color:#00C9A7;border:1px solid rgba(0,201,167,0.3);}
-  .tag-close{background:rgba(107,0,215,0.2);color:#8B30FF;border:1px solid rgba(107,0,215,0.3);}
+  .deal-tag{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600;}
+  .tag-arr{background:rgba(4,211,170,0.15);color:#04D3AA;border:1px solid rgba(4,211,170,0.3);}
+  .tag-close{background:rgba(100,4,218,0.2);color:#a56cf5;border:1px solid rgba(100,4,218,0.3);}
   .deal-header-right{display:flex;gap:8px;align-items:center;flex-shrink:0;}
-  .deal-sub-count{font-size:12px;color:#00C9A7;white-space:nowrap;}
-  .btn-spotlight{background:#6B00D7;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}
-  .btn-spotlight.on{background:#FF4D8D;}
-  .btn-edit-deal{background:transparent;color:#8888AA;border:1px solid #4444AA;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
-  .btn-edit-deal:hover{border-color:#8888AA;color:#fff;}
-  .btn-delete-deal{background:transparent;color:#FF4D8D;border:1px solid rgba(255,77,141,0.3);border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
-  .btn-delete-deal:hover{background:rgba(255,77,141,0.1);}
+  .deal-sub-count{font-size:12px;color:#04D3AA;white-space:nowrap;}
+  .btn-spotlight{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .btn-spotlight:active{transform:translateY(1px);}
+  .btn-spotlight.on{background:#FA6496;}
+  .btn-edit-deal{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:border-color 0.12s,color 0.12s;}
+  .btn-edit-deal:hover{border-color:rgba(255,255,255,0.5);color:#fff;}
+  .btn-delete-deal{background:transparent;color:#FA6496;border:1px solid rgba(250,100,150,0.3);border-radius:2px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.12s;}
+  .btn-delete-deal:hover{background:rgba(250,100,150,0.1);}
 
   /* Spotlight mode */
   .fac-spotlight-wrap{display:flex;flex:1;overflow:hidden;}
   .spotlight-main{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
-  .spotlight-hero{background:linear-gradient(135deg,#2A0060 0%,#1A0040 60%,#0D0D2B 100%);border:2px solid #6B00D7;border-radius:16px;padding:28px 32px;position:relative;overflow:hidden;}
-  .spotlight-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top left,rgba(107,0,215,0.3),transparent 60%);pointer-events:none;}
-  .spotlight-live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,77,141,0.15);border:1px solid #FF4D8D;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#FF4D8D;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;animation:pulse 1.5s infinite;}
-  .spotlight-ae-name{font-size:14px;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:6px;letter-spacing:0.5px;}
-  .spotlight-deal-name{font-size:36px;font-weight:900;line-height:1.1;margin-bottom:16px;letter-spacing:-1px;}
+  .spotlight-hero{background:#120A48;border:1px solid rgba(255,255,255,0.1);border-top:4px solid #6404DA;border-radius:2px;padding:28px 32px;position:relative;}
+  .spotlight-live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(250,100,150,0.15);border:1px solid #FA6496;border-radius:4px;padding:4px 12px;font-size:11px;font-weight:700;color:#FA6496;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;animation:pulse 1.5s infinite;}
+  .spotlight-ae-name{font-size:14px;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:6px;}
+  .spotlight-deal-name{font-size:36px;font-weight:900;line-height:1.1;margin-bottom:16px;letter-spacing:-0.03em;text-wrap:balance;}
   .spotlight-tags{display:flex;gap:10px;flex-wrap:wrap;}
-  .spotlight-tag-arr{background:rgba(0,201,167,0.15);color:#00C9A7;border:1px solid rgba(0,201,167,0.4);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700;}
-  .spotlight-tag-close{background:rgba(107,0,215,0.2);color:#8B30FF;border:1px solid rgba(107,0,215,0.4);border-radius:20px;padding:5px 14px;font-size:13px;font-weight:700;}
-  .spotlight-remove-btn{position:absolute;top:16px;right:16px;background:transparent;color:#8888AA;border:1px solid #4444AA;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;}
-  .spotlight-remove-btn:hover{color:#fff;border-color:#8888AA;}
-
-  .spotlight-feed-label{font-size:11px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+  .spotlight-tag-arr{background:rgba(4,211,170,0.15);color:#04D3AA;border:1px solid rgba(4,211,170,0.4);border-radius:4px;padding:5px 14px;font-size:13px;font-weight:700;}
+  .spotlight-tag-close{background:rgba(100,4,218,0.2);color:#a56cf5;border:1px solid rgba(100,4,218,0.4);border-radius:4px;padding:5px 14px;font-size:13px;font-weight:700;}
+  .spotlight-remove-btn{position:absolute;top:16px;right:16px;background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:color 0.12s,border-color 0.12s;}
+  .spotlight-remove-btn:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .spotlight-feed-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
   .spotlight-feed{display:flex;flex-direction:column;gap:8px;}
-  .spotlight-sub-item{background:#1A1A4E;border-radius:10px;padding:12px 16px;border-left:4px solid #6B00D7;animation:fadeSlide 0.3s ease;}
+  .spotlight-sub-item{background:#1c1262;border-radius:2px;padding:12px 16px;border-top:4px solid #6404DA;animation:fadeSlide 0.3s cubic-bezier(.2,.6,.2,1);}
   .spotlight-sub-text{font-size:15px;color:#fff;line-height:1.5;}
-  .spotlight-sub-meta{font-size:11px;color:#8888AA;margin-top:5px;}
-  .spotlight-waiting{color:#4444AA;font-size:14px;font-style:italic;}
-
-  .spotlight-right{width:240px;border-left:1px solid #2D2D6B;padding:20px 16px;display:flex;flex-direction:column;gap:16px;flex-shrink:0;overflow-y:auto;}
-  .spotlight-stats-label{font-size:10px;font-weight:700;color:#FF4D8D;letter-spacing:2px;text-transform:uppercase;}
-  .spotlight-stat{background:#1A1A4E;border-radius:8px;padding:10px 12px;}
-  .spotlight-stat-label{font-size:10px;color:#8888AA;text-transform:uppercase;letter-spacing:1.5px;}
+  .spotlight-sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:5px;}
+  .spotlight-waiting{color:rgba(255,255,255,0.3);font-size:14px;font-style:italic;}
+  .spotlight-right{width:240px;border-left:1px solid rgba(255,255,255,0.1);padding:20px 16px;display:flex;flex-direction:column;gap:16px;flex-shrink:0;overflow-y:auto;}
+  .spotlight-stats-label{font-size:10px;font-weight:700;color:#FA6496;letter-spacing:2px;text-transform:uppercase;}
+  .spotlight-stat{background:#1c1262;border-radius:2px;padding:10px 12px;}
+  .spotlight-stat-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;}
   .spotlight-stat-value{font-size:28px;font-weight:900;margin-top:2px;}
-  .spotlight-other-label{font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
-  .spotlight-other-deal{background:#1A1A4E;border-radius:8px;padding:10px 12px;cursor:pointer;border:1px solid #2D2D6B;margin-bottom:8px;transition:border-color 0.2s;}
-  .spotlight-other-deal:hover{border-color:#6B00D7;}
+  .spotlight-other-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+  .spotlight-other-deal{background:#1c1262;border-radius:2px;padding:10px 12px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);margin-bottom:8px;transition:border-color 0.12s;}
+  .spotlight-other-deal:hover{border-color:#6404DA;}
   .spotlight-other-name{font-size:13px;font-weight:600;color:#fff;}
-  .spotlight-other-meta{font-size:11px;color:#8888AA;margin-top:3px;}
+  .spotlight-other-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;}
 
   /* Modal */
   .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
-  .modal-box{background:#1A1A4E;border:1px solid #6B00D7;border-radius:14px;padding:24px;width:100%;max-width:440px;animation:fadeSlide 0.2s ease;}
-  .modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}
-  .modal-sub{font-size:13px;color:#8888AA;margin-bottom:20px;}
-  .modal-label{display:block;font-size:10px;font-weight:700;color:#00C9A7;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
-  .modal-input{width:100%;background:#0D0D2B;border:1px solid #6B00D7;border-radius:8px;color:#fff;font-size:14px;font-weight:600;padding:9px 12px;outline:none;margin-bottom:14px;}
-  .modal-select{width:100%;background:#0D0D2B;border:1px solid #6B00D7;border-radius:8px;color:#fff;font-size:14px;padding:9px 12px;outline:none;margin-bottom:20px;}
+  .modal-box{background:#1c1262;border:1px solid rgba(255,255,255,0.15);border-top:4px solid #6404DA;border-radius:2px;padding:24px;width:100%;max-width:440px;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
+  .modal-title{font-size:17px;font-weight:900;margin-bottom:4px;letter-spacing:-0.02em;}
+  .modal-sub{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;}
+  .modal-label{display:block;font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+  .modal-input{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;font-weight:600;padding:9px 12px;outline:none;margin-bottom:14px;}
+  .modal-select{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;padding:9px 12px;outline:none;margin-bottom:20px;}
   .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
-  .modal-btn-cancel{background:transparent;color:#8888AA;border:1px solid #4444AA;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;}
-  .modal-btn-save{background:#6B00D7;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;}
-  .modal-btn-delete{background:#FF4D8D;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;}
-  .modal-warn{background:rgba(255,77,141,0.1);border:1px solid rgba(255,77,141,0.3);border-radius:8px;padding:12px 14px;color:#FF4D8D;font-size:13px;margin-bottom:20px;line-height:1.5;}
+  .modal-btn-cancel{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;}
+  .modal-btn-save{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .modal-btn-save:active{transform:translateY(1px);}
+  .modal-btn-delete{background:#FA6496;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .modal-btn-delete:active{transform:translateY(1px);}
+  .modal-warn{background:rgba(250,100,150,0.1);border:1px solid rgba(250,100,150,0.3);border-radius:2px;padding:12px 14px;color:#FA6496;font-size:13px;margin-bottom:20px;line-height:1.5;}
 
   .deal-subs{margin-top:10px;display:flex;flex-direction:column;gap:7px;}
-  .sub-item{background:#0D0D2B;border-radius:7px;padding:9px 12px;border-left:3px solid #6B00D7;animation:fadeSlide 0.2s ease;}
+  .sub-item{background:#120A48;border-radius:2px;padding:9px 12px;border-top:4px solid #6404DA;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
   .sub-text{font-size:14px;color:#fff;line-height:1.5;}
-  .sub-meta{font-size:11px;color:#8888AA;margin-top:4px;}
-  .deal-waiting{font-size:12px;color:#4444AA;font-style:italic;margin-top:8px;}
+  .sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;}
+  .deal-waiting{font-size:12px;color:rgba(255,255,255,0.25);font-style:italic;margin-top:8px;}
 
   /* Stats */
-  .stats-panel{width:200px;border-left:1px solid #2D2D6B;padding:16px 14px;display:flex;flex-direction:column;gap:14px;flex-shrink:0;overflow-y:auto;}
-  .stats-label{font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;}
-  .stat-box{background:#1A1A4E;border-radius:8px;padding:10px 12px;}
-  .stat-box-label{font-size:10px;color:#8888AA;text-transform:uppercase;letter-spacing:1.5px;}
+  .stats-panel{width:200px;border-left:1px solid rgba(255,255,255,0.1);padding:16px 14px;display:flex;flex-direction:column;gap:14px;flex-shrink:0;overflow-y:auto;}
+  .stats-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;}
+  .stat-box{background:#1c1262;border-radius:2px;padding:10px 12px;}
+  .stat-box-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;}
   .stat-box-value{font-size:26px;font-weight:900;margin-top:2px;}
-  .live-stat-box{background:rgba(255,77,141,0.13);border:1px solid #FF4D8D;border-radius:8px;padding:10px 12px;margin-top:4px;}
-  .live-stat-label{font-size:10px;font-weight:700;color:#FF4D8D;letter-spacing:1.5px;text-transform:uppercase;}
+  .live-stat-box{background:rgba(250,100,150,0.13);border:1px solid #FA6496;border-radius:2px;padding:10px 12px;margin-top:4px;}
+  .live-stat-label{font-size:10px;font-weight:700;color:#FA6496;letter-spacing:1.5px;text-transform:uppercase;}
   .live-stat-ae{font-size:13px;font-weight:700;color:#fff;margin-top:4px;}
-  .live-stat-deal{font-size:12px;color:#8888AA;margin-top:2px;}
-  .live-stat-count{font-size:22px;font-weight:900;color:#FF4D8D;margin-top:6px;}
-  .live-stat-sublabel{font-size:10px;color:#8888AA;}
+  .live-stat-deal{font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;}
+  .live-stat-count{font-size:22px;font-weight:900;color:#FA6496;margin-top:6px;}
+  .live-stat-sublabel{font-size:10px;color:rgba(255,255,255,0.4);}
 
   /* Summary */
   #summary{flex:1;overflow-y:auto;padding:24px 28px;}
   .summary-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-  .summary-title{font-size:20px;font-weight:900;}
-  .summary-sub{font-size:12px;color:#8888AA;margin-top:3px;}
+  .summary-title{font-size:20px;font-weight:900;letter-spacing:-0.02em;}
+  .summary-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-top:3px;}
   .summary-controls{display:flex;gap:10px;flex-wrap:wrap;}
-  .summary-select{background:#1A1A4E;color:#fff;border:1px solid #6B00D7;border-radius:7px;padding:7px 12px;font-size:13px;outline:none;}
-  .btn-export{background:#00C9A7;color:#0D0D2B;border:none;border-radius:7px;padding:7px 16px;font-weight:700;font-size:13px;cursor:pointer;}
+  .summary-select{background:#1c1262;color:#fff;border:1px solid #6404DA;border-radius:2px;padding:7px 12px;font-size:13px;outline:none;}
+  .btn-export{background:#04D3AA;color:#120A48;border:none;border-radius:2px;padding:7px 16px;font-weight:700;font-size:13px;cursor:pointer;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .btn-export:active{transform:translateY(1px);}
   .summary-ae-block{margin-bottom:28px;}
-  .summary-ae-banner{background:linear-gradient(90deg,#6B00D7,#4A0099);border-radius:10px;padding:12px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
-  .summary-ae-name{font-size:18px;font-weight:900;}
+  .summary-ae-banner{background:#6404DA;border-radius:2px;padding:12px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+  .summary-ae-name{font-size:18px;font-weight:900;letter-spacing:-0.02em;}
   .summary-ae-meta{font-size:12px;color:rgba(255,255,255,0.6);}
-  .summary-deal{background:#1A1A4E;border-radius:8px;padding:12px 16px;margin-bottom:10px;}
-  .summary-deal-has{border-left:3px solid #00C9A7;}
-  .summary-deal-none{border-left:3px solid #4444AA;}
+  .summary-deal{background:#1c1262;border-radius:2px;padding:12px 16px;margin-bottom:10px;}
+  .summary-deal-has{border-top:4px solid #04D3AA;}
+  .summary-deal-none{border-top:4px solid rgba(255,255,255,0.15);}
   .summary-deal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;}
   .summary-deal-name{font-weight:700;font-size:14px;}
-  .summary-deal-count{font-size:12px;color:#00C9A7;}
+  .summary-deal-count{font-size:12px;color:#04D3AA;}
   .summary-deal-tags{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
-  .summary-sub-item{background:#0D0D2B;border-radius:6px;padding:8px 12px;margin-bottom:6px;}
+  .summary-sub-item{background:#120A48;border-radius:2px;padding:8px 12px;margin-bottom:6px;}
   .summary-sub-text{font-size:13px;color:#fff;line-height:1.5;}
-  .summary-sub-meta{font-size:11px;color:#8888AA;margin-top:3px;}
-  .summary-empty{color:#4444AA;font-size:13px;font-style:italic;}
-  .no-data{color:#8888AA;font-size:14px;font-style:italic;}
+  .summary-sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;}
+  .summary-empty{color:rgba(255,255,255,0.25);font-size:13px;font-style:italic;}
+  .no-data{color:rgba(255,255,255,0.4);font-size:14px;font-style:italic;}
 
   /* ── Audience ── */
   #aud{display:flex;flex-direction:column;min-height:100vh;}
-  .aud-topbar{background:#1A1A4E;border-bottom:2px solid #6B00D7;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .aud-topbar{background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.12);padding:13px 18px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
   .aud-topbar-title{font-size:13px;font-weight:900;}
-  .aud-topbar-sub{font-size:10px;color:#8888AA;margin-top:2px;}
-  .aud-topbar-brand{font-size:11px;font-weight:700;color:#00C9A7;letter-spacing:2px;}
+  .aud-topbar-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+  .aud-topbar-brand{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:2px;}
   .aud-body{flex:1;padding:20px 18px;max-width:560px;margin:0 auto;width:100%;}
-
-  /* Spotlight banner */
-  .aud-spotlight{background:linear-gradient(135deg,#6B00D7,#4A0099);border-radius:14px;padding:16px 18px;margin-bottom:20px;animation:fadeSlide 0.3s ease;}
-  .aud-spotlight-label{font-size:10px;font-weight:700;color:#FF4D8D;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;animation:pulse 1.5s infinite;}
+  .aud-spotlight{background:#6404DA;border-radius:2px;padding:16px 18px;margin-bottom:20px;animation:fadeSlide 0.3s cubic-bezier(.2,.6,.2,1);}
+  .aud-spotlight-label{font-size:10px;font-weight:700;color:#FA6496;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;animation:pulse 1.5s infinite;}
   .aud-spotlight-ae{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:2px;}
-  .aud-spotlight-deal{font-size:18px;font-weight:900;}
+  .aud-spotlight-deal{font-size:18px;font-weight:900;letter-spacing:-0.02em;}
   .aud-spotlight-tags{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-
-  /* AE browser */
-  .aud-section-label{font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .aud-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
   .aud-ae-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
-  .aud-ae-row{background:#1A1A4E;border-radius:10px;overflow:hidden;}
-  .aud-ae-header{padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-left:3px solid transparent;transition:border-color 0.2s;}
-  .aud-ae-header:hover{background:#1E1E5A;}
-  .aud-ae-header.expanded{border-left-color:#00C9A7;}
+  .aud-ae-row{background:#1c1262;border-radius:2px;overflow:hidden;}
+  .aud-ae-header{padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-left:2px solid transparent;transition:border-color 0.15s,background 0.12s;}
+  .aud-ae-header:hover{background:rgba(255,255,255,0.05);}
+  .aud-ae-header.expanded{border-left-color:#04D3AA;}
   .aud-ae-hname{font-size:14px;font-weight:700;color:#fff;}
-  .aud-ae-hmeta{font-size:11px;color:#8888AA;margin-top:2px;}
-  .aud-ae-chevron{font-size:12px;color:#8888AA;transition:transform 0.2s;}
+  .aud-ae-hmeta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+  .aud-ae-chevron{font-size:12px;color:rgba(255,255,255,0.4);transition:transform 0.2s;}
   .aud-ae-header.expanded .aud-ae-chevron{transform:rotate(180deg);}
   .aud-ae-deals{padding:0 14px 12px;display:flex;flex-direction:column;gap:8px;}
-  .aud-deal-row{background:#0D0D2B;border-radius:8px;padding:12px 14px;cursor:pointer;border:1px solid #2D2D6B;transition:border-color 0.2s;}
-  .aud-deal-row:hover{border-color:#6B00D7;}
-  .aud-deal-row.selected{border-color:#6B00D7;background:#160035;}
+  .aud-deal-row{background:#120A48;border-radius:2px;padding:12px 14px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);border-top:3px solid rgba(255,255,255,0.1);transition:border-top-color 0.15s;}
+  .aud-deal-row:hover{border-top-color:rgba(100,4,218,0.6);}
+  .aud-deal-row.selected{border-color:#6404DA;border-top-color:#6404DA;background:#1c1262;}
   .aud-deal-name{font-size:13px;font-weight:700;color:#fff;}
   .aud-deal-tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
-  .aud-deal-subcount{font-size:11px;color:#00C9A7;margin-top:4px;}
-
-  /* Submission form */
-  .aud-form-wrap{background:#1A1A4E;border:1px solid #6B00D7;border-radius:14px;padding:18px;margin-bottom:20px;animation:fadeSlide 0.25s ease;}
-  .aud-form-dealname{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;}
-  .aud-form-aename{font-size:12px;color:#8888AA;margin-bottom:14px;}
-  .form-label{display:block;font-size:10px;font-weight:700;color:#00C9A7;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
-  .form-input{width:100%;background:#0D0D2B;border:1px solid #2D2D6B;border-radius:7px;color:#fff;font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;}
-  .form-textarea{width:100%;background:#0D0D2B;border:1px solid #2D2D6B;border-radius:7px;color:#fff;font-size:14px;padding:11px 12px;outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:14px;}
-  .form-submit{width:100%;background:#6B00D7;color:#fff;border:none;border-radius:8px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;transition:background 0.2s;}
-  .form-submit:disabled{background:#22224A;cursor:default;}
-  .success-msg{background:rgba(0,201,167,0.13);border:1px solid #00C9A7;border-radius:8px;padding:12px 16px;color:#00C9A7;font-weight:700;font-size:14px;text-align:center;margin-bottom:16px;animation:fadeSlide 0.2s ease;}
-  .btn-cancel{background:transparent;color:#8888AA;border:none;font-size:12px;cursor:pointer;margin-top:8px;width:100%;padding:6px;}
+  .aud-deal-subcount{font-size:11px;color:#04D3AA;margin-top:4px;}
+  .aud-form-wrap{background:#1c1262;border:1px solid rgba(255,255,255,0.15);border-top:4px solid #6404DA;border-radius:2px;padding:18px;margin-bottom:20px;animation:fadeSlide 0.25s cubic-bezier(.2,.6,.2,1);}
+  .aud-form-dealname{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-0.01em;}
+  .aud-form-aename{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:14px;}
+  .form-label{display:block;font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+  .form-input{width:100%;background:#120A48;border:1px solid rgba(255,255,255,0.15);border-radius:2px;color:#fff;font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;}
+  .form-textarea{width:100%;background:#120A48;border:1px solid rgba(255,255,255,0.15);border-radius:2px;color:#fff;font-size:14px;padding:11px 12px;outline:none;resize:vertical;min-height:100px;line-height:1.6;margin-bottom:14px;}
+  .form-submit{width:100%;background:#6404DA;color:#fff;border:none;border-radius:2px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .form-submit:not(:disabled):active{transform:translateY(1px);}
+  .form-submit:disabled{opacity:0.4;cursor:default;}
+  .success-msg{background:rgba(4,211,170,0.13);border:1px solid #04D3AA;border-radius:2px;padding:12px 16px;color:#04D3AA;font-weight:700;font-size:14px;text-align:center;margin-bottom:16px;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
+  .btn-cancel{background:transparent;color:rgba(255,255,255,0.5);border:none;font-size:12px;cursor:pointer;margin-top:8px;width:100%;padding:6px;}
 
   /* Deal submissions feed in audience */
   .aud-feed{margin-top:16px;}
-  .aud-feed-label{font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
-  .aud-sub-item{background:#1A1A4E;border-radius:8px;padding:10px 14px;margin-bottom:8px;border-left:3px solid #6B00D7;animation:fadeSlide 0.2s ease;}
+  .aud-feed-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .aud-sub-item{background:#1c1262;border-radius:2px;padding:10px 14px;margin-bottom:8px;border-top:4px solid #6404DA;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
   .aud-sub-text{font-size:13px;color:#fff;line-height:1.5;}
-  .aud-sub-meta{font-size:11px;color:#8888AA;margin-top:3px;}
+  .aud-sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;}
 
   /* ── AE View ── */
   #aeview{display:flex;flex-direction:column;min-height:100vh;}
-  .aeview-topbar{background:#1A1A4E;border-bottom:2px solid #FF4D8D;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;}
+  .aeview-topbar{background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.12);padding:13px 18px;display:flex;justify-content:space-between;align-items:center;}
   .aeview-topbar-title{font-size:13px;font-weight:900;}
-  .aeview-topbar-sub{font-size:10px;color:#8888AA;margin-top:2px;}
+  .aeview-topbar-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
   .aeview-body{flex:1;padding:20px 18px;max-width:560px;margin:0 auto;width:100%;}
-  .aeview-pick-label{font-size:11px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
-  .aeview-ae-btn{width:100%;background:#1A1A4E;border:1px solid #2D2D6B;border-radius:8px;color:#fff;font-size:14px;font-weight:600;padding:11px 14px;cursor:pointer;text-align:left;margin-bottom:8px;transition:border-color 0.2s;}
-  .aeview-ae-btn:hover{border-color:#6B00D7;}
-  .aeview-ae-meta{font-size:11px;color:#8888AA;margin-top:2px;}
-  .aeview-back{background:transparent;color:#8888AA;border:none;font-size:13px;cursor:pointer;margin-bottom:16px;padding:0;display:flex;align-items:center;gap:6px;}
-  .aeview-ae-banner{background:linear-gradient(90deg,#FF4D8D,#C4006A);border-radius:12px;padding:16px 20px;margin-bottom:20px;}
+  .aeview-pick-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+  .aeview-ae-btn{width:100%;background:#1c1262;border:1px solid rgba(255,255,255,0.1);border-radius:2px;color:#fff;font-size:14px;font-weight:600;padding:11px 14px;cursor:pointer;text-align:left;margin-bottom:8px;transition:border-color 0.12s;}
+  .aeview-ae-btn:hover{border-color:#6404DA;}
+  .aeview-ae-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+  .aeview-back{background:transparent;color:rgba(255,255,255,0.5);border:none;font-size:13px;cursor:pointer;margin-bottom:16px;padding:0;display:flex;align-items:center;gap:6px;}
+  .aeview-ae-banner{background:#FA6496;border-radius:2px;padding:16px 20px;margin-bottom:20px;}
   .aeview-ae-label{font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;letter-spacing:2px;text-transform:uppercase;}
-  .aeview-ae-name{font-size:24px;font-weight:900;margin-top:4px;}
-  .aeview-deal{background:#1A1A4E;border-radius:10px;margin-bottom:12px;overflow:hidden;}
-  .aeview-deal-header{padding:13px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-left:3px solid #FF4D8D;}
+  .aeview-ae-name{font-size:24px;font-weight:900;margin-top:4px;letter-spacing:-0.02em;}
+  .aeview-deal{background:#1c1262;border-radius:2px;margin-bottom:12px;overflow:hidden;border-top:4px solid #FA6496;}
+  .aeview-deal-header{padding:13px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
   .aeview-deal-name{font-size:14px;font-weight:700;}
   .aeview-deal-right{display:flex;align-items:center;gap:10px;}
-  .aeview-deal-count{font-size:12px;color:#00C9A7;}
-  .aeview-deal-chevron{font-size:12px;color:#8888AA;transition:transform 0.2s;}
+  .aeview-deal-count{font-size:12px;color:#04D3AA;}
+  .aeview-deal-chevron{font-size:12px;color:rgba(255,255,255,0.4);transition:transform 0.2s;}
   .aeview-deal-header.open .aeview-deal-chevron{transform:rotate(180deg);}
   .aeview-deal-tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
   .aeview-deal-subs{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;}
-  .aeview-sub{background:#0D0D2B;border-radius:7px;padding:10px 12px;border-left:3px solid #FF4D8D;}
+  .aeview-sub{background:#120A48;border-radius:2px;padding:10px 12px;border-top:4px solid #FA6496;}
   .aeview-sub-text{font-size:13px;color:#fff;line-height:1.5;}
-  .aeview-sub-meta{font-size:11px;color:#8888AA;margin-top:4px;}
-  .aeview-no-subs{font-size:13px;color:#4444AA;font-style:italic;padding:0 16px 14px;}
-  .aeview-no-deals{color:#4444AA;font-size:14px;font-style:italic;text-align:center;margin-top:30px;}
+  .aeview-sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;}
+  .aeview-no-subs{font-size:13px;color:rgba(255,255,255,0.25);font-style:italic;padding:0 16px 14px;}
+  .aeview-no-deals{color:rgba(255,255,255,0.25);font-size:14px;font-style:italic;text-align:center;margin-top:30px;}
 
   /* Loading */
   #loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;}
-  .spinner{width:32px;height:32px;border:3px solid #2D2D6B;border-top-color:#6B00D7;border-radius:50%;animation:spin 0.8s linear infinite;}
-  .loading-brand{font-size:12px;font-weight:700;color:#00C9A7;letter-spacing:3px;}
-  .loading-text{font-size:13px;color:#8888AA;}
+  .spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.1);border-top-color:#6404DA;border-radius:50%;animation:spin 0.8s linear infinite;}
+  .loading-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;}
+  .loading-text{font-size:13px;color:rgba(255,255,255,0.4);}
 </style>
 </head>
 <body>
@@ -376,9 +375,9 @@ function renderChooser() {
       <div class="chooser-title">The Deals That Make It<br>All Just Happen</div>
       <div class="chooser-sub">North America · Mile High Focus · Denver HBR</div>
       <div class="chooser-divider"></div>
-      <button id="btn-facilitator" class="chooser-btn btn-purple">🖥️ &nbsp; Facilitator / Big Screen</button>
-      <button id="btn-audience" class="chooser-btn btn-teal">📱 &nbsp; Submit Ideas (Audience)</button>
-      <button id="btn-aeview" class="chooser-btn btn-pink">🔍 &nbsp; View My Deals (AEs)</button>
+      <button id="btn-facilitator" class="chooser-btn btn-purple">Facilitator — Big Screen</button>
+      <button id="btn-audience" class="chooser-btn btn-teal">Submit Ideas — Audience</button>
+      <button id="btn-aeview" class="chooser-btn btn-pink">View My Deals — AEs</button>
       <div class="chooser-note">
         Facilitators run the big screen.<br>
         Audience: submit ideas to any deal, any time.<br>
@@ -422,8 +421,8 @@ function renderFacilitator() {
         <div class="fac-subtitle">NORTH AMERICA · MILE HIGH FOCUS · DENVER HBR</div>
       </div>
       <div class="topbar-right">
-        <button id="btn-toggle-summary" class="btn-summary${showSummary?' active':''}">${showSummary?'← Back to Live':'📋 Summary / Export'}</button>
-        <button id="btn-back-roles-fac" style="background:transparent;color:#8888AA;border:1px solid #4444AA;border-radius:7px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;">← Roles</button>
+        <button id="btn-toggle-summary" class="btn-summary${showSummary?' active':''}">${showSummary?'← Back to Live':'Summary'}</button>
+        <button id="btn-back-roles-fac" style="background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;">← Roles</button>
         <div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>
       </div>
     </div>`;
@@ -443,7 +442,7 @@ function renderFacilitator() {
           </div>`).join("");
 
     const otherDealsHTML = otherDeals.length===0
-      ? `<div style="font-size:12px;color:#4444AA;font-style:italic;">No other deals for this AE.</div>`
+      ? `<div style="font-size:12px;color:rgba(255,255,255,0.25);font-style:italic;">No other deals for this AE.</div>`
       : otherDeals.map(d=>`
           <div class="spotlight-other-deal" data-dealid="${d.id}" data-aename="${enc(spotlightAEObj.name)}">
             <div class="spotlight-other-name">${esc(d.name)}</div>
@@ -474,20 +473,20 @@ function renderFacilitator() {
           <div class="spotlight-stats-label">● This Deal</div>
           <div class="spotlight-stat">
             <div class="spotlight-stat-label">Ideas Submitted</div>
-            <div class="spotlight-stat-value" style="color:#FF4D8D">${spotSubs.length}</div>
+            <div class="spotlight-stat-value" style="color:#FA6496">${spotSubs.length}</div>
           </div>
           <div class="spotlight-stat">
             <div class="spotlight-stat-label">People Contributing</div>
-            <div class="spotlight-stat-value" style="color:#FF4D8D">${spotContribs}</div>
+            <div class="spotlight-stat-value" style="color:#FA6496">${spotContribs}</div>
           </div>
-          <div class="spotlight-stats-label" style="color:#00C9A7;margin-top:8px;">● Session Total</div>
+          <div class="spotlight-stats-label" style="color:#04D3AA;margin-top:8px;">● Session Total</div>
           <div class="spotlight-stat">
             <div class="spotlight-stat-label">Total Ideas</div>
-            <div class="spotlight-stat-value" style="color:#00C9A7">${totalSubs}</div>
+            <div class="spotlight-stat-value" style="color:#04D3AA">${totalSubs}</div>
           </div>
           <div class="spotlight-stat">
             <div class="spotlight-stat-label">Total Contributors</div>
-            <div class="spotlight-stat-value" style="color:#00C9A7">${totalContribs}</div>
+            <div class="spotlight-stat-value" style="color:#04D3AA">${totalContribs}</div>
           </div>
           <div class="spotlight-other-label" style="margin-top:8px;">Other Deals — ${esc(appState.spotlightAE?.split(' ')[0]||'')}</div>
           ${otherDealsHTML}
@@ -550,8 +549,8 @@ function renderFacilitator() {
           </div>
           <div class="deal-header-right">
             <span class="deal-sub-count">${subs.length} idea${subs.length!==1?'s':''}</span>
-            <button class="btn-edit-deal" data-dealid="${deal.id}" data-aename="${enc(ae.name)}" title="Edit deal details">✏️ Edit</button>
-            <button class="btn-delete-deal" data-dealid="${deal.id}" data-aename="${enc(ae.name)}" title="Delete deal and all feedback">🗑 Delete</button>
+            <button class="btn-edit-deal" data-dealid="${deal.id}" data-aename="${enc(ae.name)}" title="Edit deal details">Edit</button>
+            <button class="btn-delete-deal" data-dealid="${deal.id}" data-aename="${enc(ae.name)}" title="Delete deal and all feedback">Delete</button>
             <button class="btn-spotlight${isSpotlit?' on':''}" data-dealid="${deal.id}" data-aename="${enc(ae.name)}">
               ${isSpotlit?'Remove Spotlight':'Spotlight'}
             </button>
@@ -581,7 +580,7 @@ function renderFacilitator() {
           <button id="fac-add-deal-btn" class="add-deal-btn" disabled>Add Deal</button>
         </div>
       </div>
-      ${(ae?.deals||[]).length===0?`<div style="color:#4444AA;font-size:13px;font-style:italic;">No deals added yet.</div>`:''}
+      ${(ae?.deals||[]).length===0?`<div style="color:rgba(255,255,255,0.25);font-size:13px;font-style:italic;">No deals added yet.</div>`:''}
       ${dealCards}`;
   }
 
@@ -606,8 +605,8 @@ function renderFacilitator() {
           <div class="stats-label">Session Stats</div>
           <div class="stat-box"><div class="stat-box-label">Total AEs</div><div class="stat-box-value">${appState.aes.length}</div></div>
           <div class="stat-box"><div class="stat-box-label">Deals Added</div><div class="stat-box-value">${totalDeals}</div></div>
-          <div class="stat-box"><div class="stat-box-label" style="color:#00C9A7">Ideas Submitted</div><div class="stat-box-value" style="color:#00C9A7">${totalSubs}</div></div>
-          <div class="stat-box"><div class="stat-box-label" style="color:#6B00D7">AEs Presented</div><div class="stat-box-value" style="color:#8B30FF">${aesPresented}</div></div>
+          <div class="stat-box"><div class="stat-box-label" style="color:#04D3AA">Ideas Submitted</div><div class="stat-box-value" style="color:#04D3AA">${totalSubs}</div></div>
+          <div class="stat-box"><div class="stat-box-label" style="color:#6404DA">AEs Presented</div><div class="stat-box-value" style="color:#a56cf5">${aesPresented}</div></div>
         </div>
       </div>
     </div>
@@ -818,7 +817,7 @@ function buildSummary(){
       <div><div class="summary-title">Session Summary</div><div class="summary-sub">All deals and submitted ideas, organized by AE</div></div>
       <div class="summary-controls">
         <select id="summary-filter" class="summary-select"><option value="all">All AEs</option>${filterOpts}</select>
-        <button id="btn-export-csv" class="btn-export">⬇ Export CSV</button>
+        <button id="btn-export-csv" class="btn-export">Export CSV</button>
       </div>
     </div>
     ${aesWithData.length===0?`<div class="no-data">No data yet.</div>`:''}
@@ -877,7 +876,7 @@ function renderAudience(){
   // Build AE/deal browser (always shown below form)
   const aesWithDeals=appState.aes.filter(ae=>(ae.deals||[]).length>0);
   const browserHTML=aesWithDeals.length===0
-    ?`<div style="color:#4444AA;font-size:13px;font-style:italic;margin-top:10px;">No deals added yet — check back shortly.</div>`
+    ?`<div style="color:rgba(255,255,255,0.25);font-size:13px;font-style:italic;margin-top:10px;">No deals added yet — check back shortly.</div>`
     :aesWithDeals.map(ae=>{
       const isExpanded=audExpandedAE===ae.name;
       const subCount=(ae.deals||[]).reduce((a,d)=>a+(d.submissions||[]).length,0);
@@ -919,13 +918,13 @@ function renderAudience(){
         </div>`).join("")}
       </div>`:'';
     // Show spotlight badge on form if this is the spotlighted deal
-    const spotBadge=isSpotlitForm?`<div style="font-size:10px;font-weight:700;color:#FF4D8D;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;animation:pulse 1.5s infinite;">● ON SCREEN NOW</div>`:'';
+    const spotBadge=isSpotlitForm?`<div style="font-size:10px;font-weight:700;color:#FA6496;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;animation:pulse 1.5s infinite;">● ON SCREEN NOW</div>`:'';
     // Name field: show input if no name set yet, otherwise show "submitting as" line
     const nameFieldHTML = audName.trim()
-      ? `<div style="font-size:12px;color:#8888AA;margin-bottom:14px;">
-           Submitting as <strong style="color:#00C9A7">${esc(audName.trim())}</strong>
+      ? `<div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:14px;">
+           Submitting as <strong style="color:#04D3AA">${esc(audName.trim())}</strong>
            &nbsp;·&nbsp;
-           <button id="aud-change-name-btn" style="background:none;border:none;color:#6B00D7;font-size:12px;cursor:pointer;padding:0;font-weight:600;">Change</button>
+           <button id="aud-change-name-btn" style="background:none;border:none;color:#6404DA;font-size:12px;cursor:pointer;padding:0;font-weight:600;">Change</button>
          </div>`
       : `<div>
            <label class="form-label">Your name (optional)</label>
@@ -951,7 +950,7 @@ function renderAudience(){
       <div><div class="aud-topbar-title">The Deals That Make It All Just Happen</div>
       <div class="aud-topbar-sub">Mile High Focus · Denver HBR</div></div>
       <div style="display:flex;align-items:center;gap:10px;">
-        <button id="btn-back-roles-aud" style="background:transparent;color:#8888AA;border:1px solid #4444AA;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">← Roles</button>
+        <button id="btn-back-roles-aud" style="background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">← Roles</button>
         <div class="aud-topbar-brand">BASWARE</div>
       </div>
     </div>
@@ -1085,7 +1084,7 @@ function renderAEView(){
       </div>
       ${(ae?.deals||[]).length===0
         ?`<div class="aeview-no-deals">No deals added yet for you. Check back once the session starts.</div>`
-        :`<div style="font-size:11px;color:#8888AA;margin-bottom:14px;letter-spacing:1px;">TAP A DEAL TO SEE SUBMITTED IDEAS</div>${dealBlocks}`}`;
+        :`<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px;letter-spacing:1px;">Tap a deal to see submitted ideas</div>${dealBlocks}`}`;
   }
 
   app.innerHTML=`
@@ -1094,8 +1093,8 @@ function renderAEView(){
       <div><div class="aeview-topbar-title">The Deals That Make It All Just Happen</div>
       <div class="aeview-topbar-sub">My Deals · Mile High Focus · Denver HBR</div></div>
       <div style="display:flex;align-items:center;gap:10px;">
-        <button id="btn-back-roles-ae" style="background:transparent;color:#8888AA;border:1px solid #4444AA;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">← Roles</button>
-        <div class="aud-topbar-brand" style="color:#FF4D8D">BASWARE</div>
+        <button id="btn-back-roles-ae" style="background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">← Roles</button>
+        <div class="aud-topbar-brand">BASWARE</div>
       </div>
     </div>
     <div class="aeview-body">${bodyHTML}</div>
