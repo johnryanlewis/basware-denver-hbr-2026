@@ -122,10 +122,23 @@
   .spotlight-remove-btn{position:absolute;top:16px;right:16px;background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:color 0.12s,border-color 0.12s;}
   .spotlight-remove-btn:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
   .spotlight-feed-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+
+  .spotlight-quickadd{background:#1c1262;border:1px solid rgba(4,211,170,0.3);border-radius:2px;padding:14px 16px;}
+  .spotlight-quickadd-label{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .spotlight-quickadd-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .spotlight-quickadd-text{flex:2;min-width:220px;background:#120A48;border:1px solid rgba(4,211,170,0.4);border-radius:2px;color:#fff;font-size:14px;padding:9px 12px;outline:none;}
+  .spotlight-quickadd-author{width:150px;background:#120A48;border:1px solid rgba(4,211,170,0.4);border-radius:2px;color:#fff;font-size:14px;padding:9px 12px;outline:none;}
+  .spotlight-quickadd-btn{background:#04D3AA;color:#120A48;border:none;border-radius:2px;padding:9px 20px;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .spotlight-quickadd-btn:disabled{opacity:0.35;cursor:default;}
+  .spotlight-quickadd-btn:not(:disabled):active{transform:translateY(1px);}
   .spotlight-feed{display:flex;flex-direction:column;gap:8px;}
-  .spotlight-sub-item{background:#1c1262;border-radius:2px;padding:12px 16px;border-top:4px solid #6404DA;animation:fadeSlide 0.3s cubic-bezier(.2,.6,.2,1);}
-  .spotlight-sub-text{font-size:15px;color:#fff;line-height:1.5;}
+  .spotlight-sub-item{background:#1c1262;border-radius:2px;padding:12px 16px;border-top:4px solid #6404DA;animation:fadeSlide 0.3s cubic-bezier(.2,.6,.2,1);position:relative;}
+  .spotlight-sub-text{font-size:15px;color:#fff;line-height:1.5;padding-right:60px;}
   .spotlight-sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:5px;}
+  .sub-actions{position:absolute;top:10px;right:10px;display:flex;gap:6px;}
+  .sub-action-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:2px;color:rgba(255,255,255,0.4);font-size:11px;padding:3px 7px;cursor:pointer;transition:color 0.12s,border-color 0.12s;}
+  .sub-action-btn:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
+  .sub-action-btn.delete:hover{color:#FA6496;border-color:rgba(250,100,150,0.5);}
   .spotlight-waiting{color:rgba(255,255,255,0.3);font-size:14px;font-style:italic;}
   .spotlight-right{width:240px;border-left:1px solid rgba(255,255,255,0.1);padding:20px 16px;display:flex;flex-direction:column;gap:16px;flex-shrink:0;overflow-y:auto;}
   .spotlight-stats-label{font-size:10px;font-weight:700;color:#FA6496;letter-spacing:2px;text-transform:uppercase;}
@@ -155,8 +168,8 @@
   .modal-warn{background:rgba(250,100,150,0.1);border:1px solid rgba(250,100,150,0.3);border-radius:2px;padding:12px 14px;color:#FA6496;font-size:13px;margin-bottom:20px;line-height:1.5;}
 
   .deal-subs{margin-top:10px;display:flex;flex-direction:column;gap:7px;}
-  .sub-item{background:#120A48;border-radius:2px;padding:9px 12px;border-top:4px solid #6404DA;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
-  .sub-text{font-size:14px;color:#fff;line-height:1.5;}
+  .sub-item{background:#120A48;border-radius:2px;padding:9px 12px;border-top:4px solid #6404DA;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);position:relative;}
+  .sub-text{font-size:14px;color:#fff;line-height:1.5;padding-right:56px;}
   .sub-meta{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;}
   .deal-waiting{font-size:12px;color:rgba(255,255,255,0.25);font-style:italic;margin-top:8px;}
 
@@ -410,6 +423,8 @@ function renderFacilitator() {
   const arrInputVal = document.getElementById("fac-arr-input")?.value || "";
   const closeVal = document.getElementById("fac-close-select")?.value || "Q3";
   const addAEVal = document.getElementById("fac-add-ae-input")?.value || "";
+  const facIdeaTextVal = document.getElementById("fac-idea-text")?.value || "";
+  const facIdeaAuthorVal = document.getElementById("fac-idea-author")?.value || "";
 
   const activeAEObj = appState.aes.find(a => a.name === appState.activeAE);
   const spotlightAEObj = appState.spotlightAE ? appState.aes.find(a=>a.name===appState.spotlightAE) : null;
@@ -446,6 +461,10 @@ function renderFacilitator() {
       ? `<div class="spotlight-waiting">Waiting for ideas from the room…</div>`
       : [...spotSubs].reverse().map(s=>`
           <div class="spotlight-sub-item">
+            <div class="sub-actions">
+              <button class="sub-action-btn edit" data-subid="${s.id}" data-aename="${enc(appState.spotlightAE)}" data-dealid="${spotlightDeal.id}" title="Edit idea">Edit</button>
+              <button class="sub-action-btn delete" data-subid="${s.id}" data-aename="${enc(appState.spotlightAE)}" data-dealid="${spotlightDeal.id}" title="Delete idea">Delete</button>
+            </div>
             <div class="spotlight-sub-text">${esc(s.text)}</div>
             <div class="spotlight-sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
           </div>`).join("");
@@ -473,6 +492,14 @@ function renderFacilitator() {
             <div class="spotlight-tags">
               ${spotlightDeal.arr?`<span class="spotlight-tag-arr">ARR: ${esc(spotlightDeal.arr)}</span>`:''}
               ${spotlightDeal.closeQ?`<span class="spotlight-tag-close">Close: ${esc(spotlightDeal.closeQ)}</span>`:''}
+            </div>
+          </div>
+          <div class="spotlight-quickadd">
+            <div class="spotlight-quickadd-label">Log an Idea From the Room</div>
+            <div class="spotlight-quickadd-row">
+              <input id="fac-idea-text" class="spotlight-quickadd-text" placeholder="What did they say…"/>
+              <input id="fac-idea-author" class="spotlight-quickadd-author" placeholder="Who said it (optional)"/>
+              <button id="fac-idea-submit" class="spotlight-quickadd-btn" disabled>Add to Feed</button>
             </div>
           </div>
           <div class="spotlight-feed-label">Ideas Submitted (${spotSubs.length})</div>
@@ -514,6 +541,60 @@ function renderFacilitator() {
         await saveState({...appState,activeDeal:el.dataset.dealid,spotlightAE:decodeURIComponent(el.dataset.aename)});
       });
     });
+
+    // Facilitator quick-add idea (for verbal ideas shared in the room)
+    const facIdeaText=document.getElementById("fac-idea-text");
+    const facIdeaAuthor=document.getElementById("fac-idea-author");
+    const facIdeaBtn=document.getElementById("fac-idea-submit");
+    if(facIdeaText){
+      facIdeaText.value=facIdeaTextVal;
+      facIdeaText.addEventListener("input",()=>{ if(facIdeaBtn) facIdeaBtn.disabled=!facIdeaText.value.trim(); });
+      facIdeaText.addEventListener("keydown",e=>{ if(e.key==="Enter") doAddFacIdea(); });
+    }
+    if(facIdeaAuthor){
+      facIdeaAuthor.value=facIdeaAuthorVal;
+      facIdeaAuthor.addEventListener("keydown",e=>{ if(e.key==="Enter") doAddFacIdea(); });
+    }
+    if(facIdeaBtn) facIdeaBtn.disabled=!facIdeaTextVal.trim();
+    facIdeaBtn?.addEventListener("click", doAddFacIdea);
+
+    async function doAddFacIdea(){
+      const txt=document.getElementById("fac-idea-text")?.value?.trim();
+      const author=document.getElementById("fac-idea-author")?.value?.trim();
+      if(!txt) return;
+      const sub={id:Date.now()+Math.random()+"",text:txt,author:author||"",ts:Date.now()};
+      const aes=appState.aes.map(ae=>ae.name===appState.spotlightAE
+        ?{...ae,deals:(ae.deals||[]).map(d=>d.id===appState.activeDeal?{...d,submissions:[...(d.submissions||[]),sub]}:d)}
+        :ae);
+      // Clear fields immediately so the next re-render shows an empty form
+      const textEl=document.getElementById("fac-idea-text");
+      const authorEl=document.getElementById("fac-idea-author");
+      if(textEl) textEl.value="";
+      if(authorEl) authorEl.value="";
+      await saveState({...appState,aes});
+    }
+
+    // Edit/delete idea buttons (spotlight feed)
+    document.querySelectorAll(".sub-action-btn.edit").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const aeName=decodeURIComponent(btn.dataset.aename);
+        const dealId=btn.dataset.dealid;
+        const ae=appState.aes.find(a=>a.name===aeName);
+        const d=ae?.deals?.find(dl=>dl.id===dealId);
+        const sub=d?.submissions?.find(s=>s.id===btn.dataset.subid);
+        if(sub) showEditIdeaModal(aeName, dealId, sub);
+      });
+    });
+    document.querySelectorAll(".sub-action-btn.delete").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const aeName=decodeURIComponent(btn.dataset.aename);
+        const dealId=btn.dataset.dealid;
+        const ae=appState.aes.find(a=>a.name===aeName);
+        const d=ae?.deals?.find(dl=>dl.id===dealId);
+        const sub=d?.submissions?.find(s=>s.id===btn.dataset.subid);
+        if(sub) showDeleteIdeaModal(aeName, dealId, sub);
+      });
+    });
     return;
   }
 
@@ -540,8 +621,14 @@ function renderFacilitator() {
       let subsHTML="";
       if(isSpotlit&&subs.length>0){
         subsHTML=`<div class="deal-subs">${[...subs].reverse().map(s=>`
-          <div class="sub-item"><div class="sub-text">${esc(s.text)}</div>
-          <div class="sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div></div>`).join("")}</div>`;
+          <div class="sub-item">
+            <div class="sub-actions">
+              <button class="sub-action-btn edit" data-subid="${s.id}" data-aename="${enc(ae.name)}" data-dealid="${deal.id}" title="Edit idea">Edit</button>
+              <button class="sub-action-btn delete" data-subid="${s.id}" data-aename="${enc(ae.name)}" data-dealid="${deal.id}" title="Delete idea">Delete</button>
+            </div>
+            <div class="sub-text">${esc(s.text)}</div>
+            <div class="sub-meta">- ${esc(s.author||'Anonymous')} · ${fmt(s.ts)}</div>
+          </div>`).join("")}</div>`;
       }
       if(isSpotlit&&subs.length===0) subsHTML=`<div class="deal-waiting">Waiting for ideas…</div>`;
       return `<div class="deal-card${isSpotlit?' live':''}">
@@ -707,6 +794,28 @@ function renderFacilitator() {
       showDeleteModal(aeName, deal);
     });
   });
+
+  // Edit/delete idea buttons (normal mode deal card feed)
+  document.querySelectorAll(".sub-action-btn.edit").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const aeName=decodeURIComponent(btn.dataset.aename);
+      const dealId=btn.dataset.dealid;
+      const ae=appState.aes.find(a=>a.name===aeName);
+      const d=ae?.deals?.find(dl=>dl.id===dealId);
+      const sub=d?.submissions?.find(s=>s.id===btn.dataset.subid);
+      if(sub) showEditIdeaModal(aeName, dealId, sub);
+    });
+  });
+  document.querySelectorAll(".sub-action-btn.delete").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const aeName=decodeURIComponent(btn.dataset.aename);
+      const dealId=btn.dataset.dealid;
+      const ae=appState.aes.find(a=>a.name===aeName);
+      const d=ae?.deals?.find(dl=>dl.id===dealId);
+      const sub=d?.submissions?.find(s=>s.id===btn.dataset.subid);
+      if(sub) showDeleteIdeaModal(aeName, dealId, sub);
+    });
+  });
 }
 
 function showEditModal(aeName, deal){
@@ -782,6 +891,79 @@ function showDeleteModal(aeName, deal){
       await saveState({...appState,aes,activeDeal:newActive,spotlightAE:newSpotlight});
     } catch(err) {
       alert("Delete failed: "+err.message+"\n\nCheck your Firebase rules are published.");
+    }
+  };
+}
+
+function showEditIdeaModal(aeName, dealId, sub){
+  const overlay=document.createElement("div");
+  overlay.className="modal-overlay";
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-title">Edit Idea</div>
+      <div class="modal-sub">${esc(aeName)}</div>
+      <label class="modal-label">Idea Text</label>
+      <textarea id="modal-idea-text" class="modal-input" style="min-height:90px;resize:vertical;font-weight:400;">${esc(sub.text)}</textarea>
+      <label class="modal-label">Submitted By</label>
+      <input id="modal-idea-author" class="modal-input" value="${esc(sub.author||'')}" placeholder="Anonymous"/>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-save" id="modal-save">Save Changes</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  document.getElementById("modal-cancel").onclick=()=>overlay.remove();
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) overlay.remove(); });
+  document.getElementById("modal-save").onclick=async()=>{
+    const newText=document.getElementById("modal-idea-text").value.trim();
+    const newAuthor=document.getElementById("modal-idea-author").value.trim();
+    if(!newText) return;
+    const aes=appState.aes.map(ae=>ae.name===aeName
+      ?{...ae,deals:(ae.deals||[]).map(d=>d.id===dealId
+          ?{...d,submissions:(d.submissions||[]).map(s=>s.id===sub.id?{...s,text:newText,author:newAuthor}:s)}
+          :d)}
+      :ae);
+    overlay.remove();
+    try {
+      await saveState({...appState,aes});
+    } catch(err) {
+      alert("Edit failed: "+err.message);
+    }
+  };
+}
+
+function showDeleteIdeaModal(aeName, dealId, sub){
+  const overlay=document.createElement("div");
+  overlay.className="modal-overlay";
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-title">Delete Idea</div>
+      <div class="modal-sub">${esc(aeName)}</div>
+      <div class="modal-warn">
+        You're about to permanently delete this idea${sub.author?` from <strong>${esc(sub.author)}</strong>`:''}:
+        <div style="margin-top:8px;font-style:italic;color:#fff;">"${esc(sub.text)}"</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-delete" id="modal-confirm-delete">Yes, Delete</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  document.getElementById("modal-cancel").onclick=()=>overlay.remove();
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) overlay.remove(); });
+  document.getElementById("modal-confirm-delete").onclick=async()=>{
+    const aes=appState.aes.map(ae=>ae.name===aeName
+      ?{...ae,deals:(ae.deals||[]).map(d=>d.id===dealId
+          ?{...d,submissions:(d.submissions||[]).filter(s=>s.id!==sub.id)}
+          :d)}
+      :ae);
+    overlay.remove();
+    try {
+      await saveState({...appState,aes});
+    } catch(err) {
+      alert("Delete failed: "+err.message);
     }
   };
 }
