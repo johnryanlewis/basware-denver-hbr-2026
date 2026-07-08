@@ -130,7 +130,35 @@
   .lane-expanded-desc{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;}
   .lane-expanded-close{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:7px 14px;font-size:12px;font-weight:700;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:color 0.12s,border-color 0.12s;}
   .lane-expanded-close:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
-  .lane-expanded-stats{display:flex;gap:12px;padding:12px 24px;background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
+  .lane-expanded-stats{display:flex;gap:10px;padding:12px 24px;background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0;flex-wrap:wrap;align-items:center;}
+  .filter-pill{border-radius:2px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:opacity 0.15s,transform 0.12s cubic-bezier(.2,.6,.2,1);user-select:none;}
+  .filter-pill:active{transform:scale(0.97);}
+  .filter-pill.all{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.12);}
+  .filter-pill.all.active{background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.3);}
+  .filter-pill.green{background:rgba(4,211,170,0.12);color:#04D3AA;border-color:rgba(4,211,170,0.25);}
+  .filter-pill.green.active{background:rgba(4,211,170,0.25);border-color:#04D3AA;}
+  .filter-pill.yellow{background:rgba(84,156,255,0.12);color:#549CFF;border-color:rgba(84,156,255,0.25);}
+  .filter-pill.yellow.active{background:rgba(84,156,255,0.25);border-color:#549CFF;}
+  .filter-pill.red{background:rgba(250,100,150,0.12);color:#FA6496;border-color:rgba(250,100,150,0.25);}
+  .filter-pill.red.active{background:rgba(250,100,150,0.25);border-color:#FA6496;}
+  .filter-count{margin-left:auto;font-size:11px;color:rgba(255,255,255,0.3);font-style:italic;}
+
+  /* Response & solved */
+  .sticky-response-wrap{margin-top:10px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;}
+  .sticky-response-label{font-size:9px;font-weight:700;color:rgba(250,100,150,0.7);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+  .sticky-response-label.solved{color:rgba(4,211,170,0.7);}
+  .sticky-response-text-saved{font-size:12px;color:rgba(255,255,255,0.65);line-height:1.5;font-style:italic;}
+  .sticky-response-row{display:flex;gap:6px;align-items:flex-start;}
+  .sticky-response-input{flex:1;background:rgba(0,0,0,0.25);border:1px solid rgba(250,100,150,0.25);border-radius:2px;color:#fff;font-size:12px;font-family:'Inter',system-ui,sans-serif;padding:7px 9px;outline:none;resize:none;min-height:56px;line-height:1.5;}
+  .sticky-response-input:focus{border-color:rgba(250,100,150,0.5);}
+  .sticky-solve-btn{background:#120A48;border:1px solid rgba(4,211,170,0.35);border-radius:2px;color:#04D3AA;padding:7px 10px;cursor:pointer;flex-shrink:0;transition:background 0.15s,border-color 0.15s;display:flex;align-items:center;justify-content:center;}
+  .sticky-solve-btn:hover{background:rgba(4,211,170,0.1);border-color:#04D3AA;}
+  .sticky-solve-btn svg{width:16px;height:16px;}
+  .sticky-solved-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-top:6px;}
+  .sticky-solved-badge svg{width:12px;height:12px;}
+
+  /* Solved note: red body, green top accent */
+  .sticky-red-solved{background:#6b1530;border-left:3px solid #04D3AA !important;}
   .lane-expanded-body{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;align-content:start;}
   .stats-bar{background:#1c1262;border-top:1px solid rgba(255,255,255,0.1);padding:8px 20px;display:flex;gap:24px;align-items:center;flex-shrink:0;}
   .stat-item{font-size:11px;color:rgba(255,255,255,0.4);}
@@ -317,6 +345,7 @@ function renderChooser() {
 // ── BOARD (FACILITATOR) ───────────────────────────────────────────────────
 let showEditLanes = false;
 let expandedLane = null;
+let expandedFilter = null; // null = all, "green" | "yellow" | "red"
 
 function renderBoard() {
   const app = document.getElementById("app");
@@ -711,11 +740,11 @@ function renderParticipant() {
 function showExpandedLane(lane) {
   // Build a live-updating overlay; re-render when Firebase updates
   expandedLane = lane.id;
+  expandedFilter = null;
   renderExpandedLane();
 }
 
 function renderExpandedLane() {
-  // Remove any existing overlay
   document.getElementById("lane-expanded-overlay")?.remove();
   if(!expandedLane) return;
 
@@ -727,17 +756,47 @@ function renderExpandedLane() {
   const ly = laneNotes.filter(n=>n.color==="yellow").length;
   const lr = laneNotes.filter(n=>n.color==="red").length;
 
-  const notesHTML = laneNotes.length===0
-    ? `<div style="color:rgba(255,255,255,0.18);font-style:italic;font-size:14px;grid-column:1/-1;text-align:center;padding:40px 0;">No notes yet in this lane.</div>`
-    : [...laneNotes].reverse().map(note=>`
-        <div class="sticky sticky-${note.color}" style="font-size:15px;">
+  // Apply filter
+  const filteredNotes = expandedFilter
+    ? laneNotes.filter(n=>n.color===expandedFilter)
+    : laneNotes;
+  const visibleCount = filteredNotes.length;
+
+  // Basware tick SVG for solve button
+  const tickSVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12.5L9 17.5L20 7" stroke="#04D3AA" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
+
+  const notesHTML = filteredNotes.length===0
+    ? `<div style="color:rgba(255,255,255,0.18);font-style:italic;font-size:14px;grid-column:1/-1;text-align:center;padding:40px 0;">${laneNotes.length===0?'No notes yet in this lane.':'No notes match this filter.'}</div>`
+    : [...filteredNotes].reverse().map(note=>{
+        const isSolved = !!note.solved;
+        const stickyClass = note.color==='red'
+          ? (isSolved ? 'sticky sticky-red sticky-red-solved' : 'sticky sticky-red')
+          : `sticky sticky-${note.color}`;
+
+        // Response section for red notes only
+        const responseHTML = note.color==='red' ? `
+          <div class="sticky-response-wrap">
+            ${isSolved
+              ? `<div class="sticky-response-label solved">Response</div>
+                 <div class="sticky-response-text-saved">${esc(note.response||'')}</div>
+                 <div class="sticky-solved-badge">${tickSVG} Addressed</div>`
+              : `<div class="sticky-response-label">Response</div>
+                 <div class="sticky-response-row">
+                   <textarea class="sticky-response-input exp-response-input" data-noteid="${note.id}" placeholder="Enter a response to this challenge…">${esc(note.response||'')}</textarea>
+                   <button class="sticky-solve-btn exp-solve-btn" data-noteid="${note.id}" title="Mark as addressed">${tickSVG}</button>
+                 </div>`}
+          </div>` : '';
+
+        return `<div class="${stickyClass}">
           <div class="sticky-actions">
             <button class="sticky-btn edit exp-edit" data-noteid="${note.id}" title="Edit">Edit</button>
             <button class="sticky-btn del exp-del" data-noteid="${note.id}" title="Delete">Del</button>
           </div>
           <div class="sticky-text" style="font-size:15px;">${esc(note.text)}</div>
           <div class="sticky-author">${esc(note.author||'Anonymous')} · ${fmt(note.ts)}</div>
-        </div>`).join("");
+          ${responseHTML}
+        </div>`;
+      }).join("");
 
   const assumptionsExpandHTML = (lane.assumptions||[]).length>0
     ? `<div style="padding:10px 24px;background:#0d0735;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
@@ -761,21 +820,31 @@ function renderExpandedLane() {
     </div>
     ${assumptionsExpandHTML}
     <div class="lane-expanded-stats">
-      ${lg>0?`<span class="lane-count-pill pill-green">${lg} working well</span>`:''}
-      ${ly>0?`<span class="lane-count-pill pill-yellow">${ly} neutral</span>`:''}
-      ${lr>0?`<span class="lane-count-pill pill-red">${lr} needs work</span>`:''}
-      ${laneNotes.length===0?`<span style="font-size:11px;color:rgba(255,255,255,0.18);font-style:italic;">Waiting for notes…</span>`:''}
+      <button class="filter-pill all${!expandedFilter?' active':''}" data-filter="">All (${laneNotes.length})</button>
+      ${lg>0?`<button class="filter-pill green${expandedFilter==='green'?' active':''}" data-filter="green">${lg} working well</button>`:''}
+      ${ly>0?`<button class="filter-pill yellow${expandedFilter==='yellow'?' active':''}" data-filter="yellow">${ly} neutral</button>`:''}
+      ${lr>0?`<button class="filter-pill red${expandedFilter==='red'?' active':''}" data-filter="red">${lr} needs work</button>`:''}
+      ${expandedFilter?`<span class="filter-count">Showing ${visibleCount} of ${laneNotes.length}</span>`:''}
     </div>
     <div class="lane-expanded-body">${notesHTML}</div>`;
 
   document.body.appendChild(overlay);
 
+  // Close
   document.getElementById("btn-close-expanded").onclick=()=>{
-    expandedLane=null;
+    expandedLane=null; expandedFilter=null;
     overlay.remove();
   };
 
-  // Edit/delete from expanded view
+  // Filter pills
+  overlay.querySelectorAll(".filter-pill").forEach(btn=>{
+    btn.onclick=()=>{
+      expandedFilter = btn.dataset.filter || null;
+      renderExpandedLane();
+    };
+  });
+
+  // Edit/delete
   overlay.querySelectorAll(".exp-edit").forEach(btn=>{
     btn.onclick=()=>{
       const note=appState.notes.find(n=>n.id===btn.dataset.noteid);
@@ -786,6 +855,28 @@ function renderExpandedLane() {
     btn.onclick=()=>{
       const note=appState.notes.find(n=>n.id===btn.dataset.noteid);
       if(note) showDeleteNoteModal(note);
+    };
+  });
+
+  // Save response text as user types (debounced)
+  overlay.querySelectorAll(".exp-response-input").forEach(ta=>{
+    let debounce;
+    ta.addEventListener("input",()=>{
+      clearTimeout(debounce);
+      debounce=setTimeout(async()=>{
+        const notes=appState.notes.map(n=>n.id===ta.dataset.noteid?{...n,response:ta.value}:n);
+        await saveState({...appState,notes});
+      },600);
+    });
+  });
+
+  // Solve button (mark as addressed)
+  overlay.querySelectorAll(".exp-solve-btn").forEach(btn=>{
+    btn.onclick=async()=>{
+      const ta=overlay.querySelector(`.exp-response-input[data-noteid="${btn.dataset.noteid}"]`);
+      const response=ta?.value?.trim()||"";
+      const notes=appState.notes.map(n=>n.id===btn.dataset.noteid?{...n,solved:true,response}:n);
+      await saveState({...appState,notes});
     };
   });
 }
