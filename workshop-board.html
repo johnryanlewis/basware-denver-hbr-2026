@@ -156,6 +156,10 @@
   .sticky-solve-btn svg{width:16px;height:16px;}
   .sticky-solved-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-top:6px;}
   .sticky-solved-badge svg{width:12px;height:12px;}
+  .sticky-undo-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:2px;color:rgba(255,255,255,0.4);padding:7px 10px;cursor:pointer;flex-shrink:0;transition:background 0.15s,border-color 0.15s,color 0.15s;display:flex;align-items:center;justify-content:center;}
+  .sticky-undo-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.35);color:#fff;}
+  .sticky-undo-btn svg{width:16px;height:16px;}
+  .sticky-solved-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
 
   /* Solved note: red body, green top accent */
   .sticky-red-solved{background:#6b1530;border-left:3px solid #04D3AA !important;}
@@ -774,12 +778,16 @@ function renderExpandedLane() {
           : `sticky sticky-${note.color}`;
 
         // Response section for red notes only
+        const undoSVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 14L4 9L9 4" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/><path d="M4 9H15C17.761 9 20 11.239 20 14C20 16.761 17.761 19 15 19H11" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>`;
         const responseHTML = note.color==='red' ? `
           <div class="sticky-response-wrap">
             ${isSolved
               ? `<div class="sticky-response-label solved">Response</div>
                  <div class="sticky-response-text-saved">${esc(note.response||'')}</div>
-                 <div class="sticky-solved-badge">${tickSVG} Addressed</div>`
+                 <div class="sticky-solved-row">
+                   <div class="sticky-solved-badge">${tickSVG} Addressed</div>
+                   <button class="sticky-undo-btn exp-undo-btn" data-noteid="${note.id}" title="Undo — reopen for editing">${undoSVG}</button>
+                 </div>`
               : `<div class="sticky-response-label">Response</div>
                  <div class="sticky-response-row">
                    <textarea class="sticky-response-input exp-response-input" data-noteid="${note.id}" placeholder="Enter a response to this challenge…">${esc(note.response||'')}</textarea>
@@ -876,6 +884,14 @@ function renderExpandedLane() {
       const ta=overlay.querySelector(`.exp-response-input[data-noteid="${btn.dataset.noteid}"]`);
       const response=ta?.value?.trim()||"";
       const notes=appState.notes.map(n=>n.id===btn.dataset.noteid?{...n,solved:true,response}:n);
+      await saveState({...appState,notes});
+    };
+  });
+
+  // Undo button (reopen for editing)
+  overlay.querySelectorAll(".exp-undo-btn").forEach(btn=>{
+    btn.onclick=async()=>{
+      const notes=appState.notes.map(n=>n.id===btn.dataset.noteid?{...n,solved:false}:n);
       await saveState({...appState,notes});
     };
   });
