@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Onsite Design Workshop: Process Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & base ── */
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:#6404DA;border-radius:3px;}
+  input,textarea,select{font-family:'Inter',system-ui,sans-serif;}
+  input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.25);}
+  a{color:#04D3AA;}
+  a:hover{color:#fff;}
+
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes noteIn{from{opacity:0;transform:scale(0.9) translateY(6px);}to{opacity:1;transform:scale(1) translateY(0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  #app{min-height:100vh;}
+  .hidden{display:none!important;}
+
+  /* ── Loading ── */
+  #loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;}
+  .spinner{width:28px;height:28px;border:2px solid rgba(100,4,218,0.3);border-top-color:#6404DA;border-radius:50%;animation:spin 0.75s linear infinite;}
+
+  /* ── Chooser ── */
+  #chooser{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;}
+  #chooser::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:520px;height:520px;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xMy44OSwzMi42NWwxMC4yNSwyMi4xYy44LDEuNzgsMywyLjY1LDQuNzMsMi42NXM0LjE4LTEuMDYsNS0yLjgxTDUxLjQyLDEyYy4yNy0uNTIsLjM5LTEuMDUsLjM5LTEuNTksMC0yLjQ5LTIuMTgtMy43Ni00Ljk1LTMuNzYtMS43OCwwLTQuMDksLjc3LTQuODYsMi4zMWwtMTMuMzEsMzQuMDEtNi43MS0xNS4zM2MtLjctMS41NC0yLjg3LTIuMzEtNC42NS0yLjMxLTIuNzYsMC01LjA5LDEuMjctNS4wOSwzLjc2LDAsLjU1LDEuNjQsMy41NiwxLjY0LDMuNTZoMFoiPjwvcGF0aD48L3N2Zz4=") center/contain no-repeat;opacity:0.05;pointer-events:none;}
+  .chooser-inner{text-align:center;max-width:440px;width:100%;position:relative;z-index:1;}
+  .chooser-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+  .chooser-title{font-family:'Inter',system-ui,sans-serif;font-size:44px;font-weight:800;line-height:1.0;letter-spacing:-0.03em;text-wrap:balance;margin-bottom:8px;}
+  .chooser-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;letter-spacing:1px;}
+  .chooser-divider{width:40px;height:2px;background:#6404DA;margin:0 auto 32px;}
+  .chooser-btn{width:100%;border:none;border-radius:2px;padding:17px 24px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:12px;letter-spacing:0.3px;transition:opacity 0.2s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .chooser-btn:active{transform:translateY(1px);}
+  .btn-purple{background:#6404DA;color:#fff;}
+  .btn-teal{background:#04D3AA;color:#120A48;}
+  .chooser-legend{margin-top:28px;display:flex;justify-content:center;gap:20px;}
+  .legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,0.4);}
+  .legend-dot{width:12px;height:4px;border-radius:2px;flex-shrink:0;}
+  .chooser-note{margin-top:24px;font-size:12px;color:rgba(255,255,255,0.3);line-height:1.8;}
+
+  /* ── Board topbar ── */
+  #board{display:flex;flex-direction:column;height:100vh;}
+  .board-topbar{background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.12);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .board-title{font-size:17px;font-weight:900;letter-spacing:-0.02em;}
+  .board-subtitle{font-size:11px;color:#04D3AA;font-weight:700;letter-spacing:1.5px;margin-top:3px;}
+  .topbar-right{display:flex;gap:8px;align-items:center;}
+  .btn-small{border:none;border-radius:2px;padding:6px 12px;font-family:'Inter',system-ui,sans-serif;font-weight:700;font-size:11px;cursor:pointer;letter-spacing:0.3px;white-space:nowrap;transition:opacity 0.12s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .btn-small:active{transform:translateY(1px);}
+  .btn-sm-teal{background:#04D3AA;color:#120A48;}
+  .btn-sm-ghost{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);}
+  .btn-sm-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .brand-tag .name{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:2px;}
+  .brand-tag .tagline{font-size:10px;color:rgba(255,255,255,0.4);}
+
+  /* ── Board lanes ── */
+  .board-body{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px;}
+  .lanes-wrap{display:flex;gap:12px;height:100%;min-width:max-content;}
+  .lane{background:#1c1262;border:1px solid rgba(255,255,255,0.1);border-radius:2px;width:260px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;}
+  .lane-header{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;}
+  .lane-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.02em;}
+  .lane-desc{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;line-height:1.55;}
+  .lane-count{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;}
+  .lane-count-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+  .pill-green{background:rgba(4,211,170,0.15);color:#04D3AA;border:1px solid rgba(4,211,170,0.3);}
+  .pill-yellow{background:rgba(84,156,255,0.15);color:#549CFF;border:1px solid rgba(84,156,255,0.3);}
+  .pill-red{background:rgba(250,100,150,0.15);color:#FA6496;border:1px solid rgba(250,100,150,0.3);}
+  .lane-notes{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;}
+  .lane-empty{font-size:12px;color:rgba(255,255,255,0.2);font-style:italic;text-align:center;padding:20px 0;}
+
+  /* ── Sticky notes (top-border Basware card pattern) ── */
+  .sticky{border-radius:2px;padding:10px 12px;animation:noteIn 0.25s cubic-bezier(.2,.6,.2,1);position:relative;}
+  .sticky-green{background:#062b22;border-top:3px solid #04D3AA;}
+  .sticky-yellow{background:#071838;border-top:3px solid #549CFF;}
+  .sticky-red{background:#2a0a18;border-top:3px solid #FA6496;}
+  .sticky-text{font-size:13px;color:rgba(255,255,255,0.9);line-height:1.55;padding-right:52px;text-wrap:pretty;}
+  .sticky-author{font-size:10px;color:rgba(255,255,255,0.3);margin-top:5px;font-weight:500;}
+  .sticky-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;}
+  .sticky-btn{background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:2px;color:rgba(255,255,255,0.3);font-size:10px;padding:2px 6px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:color 0.12s,border-color 0.12s;}
+  .sticky-btn:hover{color:#fff;border-color:rgba(255,255,255,0.35);}
+  .sticky-btn.del:hover{color:#FA6496;border-color:rgba(250,100,150,0.4);}
+
+  /* ── Edit lane panel ── */
+  .edit-lanes-panel{background:#1c1262;border-left:2px solid #6404DA;width:280px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;}
+  .edit-lanes-header{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;align-items:center;}
+  .edit-lanes-title{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;}
+  .edit-lanes-body{flex:1;overflow-y:auto;padding:12px;}
+  .edit-lane-row{background:#120A48;border-radius:2px;padding:10px 12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.08);border-top:3px solid rgba(100,4,218,0.5);}
+  .edit-lane-name-input{width:100%;background:transparent;border:none;color:#fff;font-size:13px;font-weight:700;font-family:'Inter',system-ui,sans-serif;outline:none;margin-bottom:5px;}
+  .edit-lane-desc-input{width:100%;background:transparent;border:none;color:rgba(255,255,255,0.45);font-size:11px;font-family:'Inter',system-ui,sans-serif;outline:none;resize:none;min-height:40px;line-height:1.55;}
+  .edit-lane-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+  .btn-icon{background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:2px;color:rgba(255,255,255,0.35);font-size:11px;padding:3px 8px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:color 0.12s,border-color 0.12s;}
+  .btn-icon:hover{color:#FA6496;border-color:rgba(250,100,150,0.35);}
+  .add-lane-form{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.07);}
+  .add-lane-label{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .add-lane-input{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:13px;font-family:'Inter',system-ui,sans-serif;padding:8px 10px;outline:none;margin-bottom:6px;}
+  .add-lane-btn{width:100%;background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px;font-weight:700;font-size:12px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;}
+  .add-lane-btn:disabled{opacity:0.35;cursor:default;}
+
+  /* ── Assumptions ── */
+  .lane-assumptions{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);}
+  .lane-assumptions-label{font-size:9px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;}
+  .lane-assumptions-edit-btn{background:transparent;border:none;color:rgba(4,211,170,0.45);font-size:10px;cursor:pointer;padding:0;font-weight:600;font-family:'Inter',system-ui,sans-serif;transition:color 0.12s;}
+  .lane-assumptions-edit-btn:hover{color:#04D3AA;}
+  .lane-assumption-item{font-size:11px;color:rgba(255,255,255,0.5);padding:2px 0 2px 12px;position:relative;line-height:1.55;}
+  .lane-assumption-item::before{content:'✓';position:absolute;left:0;top:2px;font-size:9px;color:#04D3AA;opacity:0.7;}
+  .lane-assumptions-empty{font-size:11px;color:rgba(255,255,255,0.15);font-style:italic;}
+  .part-assumptions{background:rgba(4,211,170,0.05);border:1px solid rgba(4,211,170,0.15);border-top:2px solid rgba(4,211,170,0.4);border-radius:2px;padding:12px 14px;margin-bottom:14px;}
+  .part-assumptions-label{font-size:9px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+  .part-assumption-item{font-size:12px;color:rgba(255,255,255,0.6);padding:3px 0 3px 14px;position:relative;line-height:1.55;}
+  .part-assumption-item::before{content:'✓';position:absolute;left:0;top:3px;font-size:10px;color:#04D3AA;opacity:0.7;}
+
+  /* ── Expand lane ── */
+  .assumptions-help{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:12px;line-height:1.55;}
+  .lane-expand-btn{background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:2px;color:rgba(255,255,255,0.35);font-size:10px;padding:3px 8px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;float:right;margin-left:8px;transition:color 0.12s,border-color 0.12s;}
+  .lane-expand-btn:hover{color:#04D3AA;border-color:rgba(4,211,170,0.4);}
+  .lane-expanded-overlay{position:fixed;inset:0;background:#120A48;z-index:500;display:flex;flex-direction:column;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
+  .lane-expanded-topbar{background:#1c1262;border-bottom:2px solid #6404DA;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;overflow:hidden;}
+  .lane-expanded-topbar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:44%;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiB2aWV3Qm94PSIwIDAgMTYwIDE2MCIgYXJpYS1oaWRkZW49InRydWUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJ0IiB4PSIwIiB5PSIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxnIGZpbGw9IiNGRkZGRkYiPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwIDEwKSBzY2FsZSgwLjM0KSIgZD0iTTEzLjg5LDMyLjY1bDEwLjI1LDIyLjFjLjgsMS43OCwzLDIuNjUsNC43MywyLjY1czQuMTgtMS4wNiw1LTIuODFMNTEuNDIsMTJjLjI3LS41MiwuMzktMS4wNSwuMzktMS41OSwwLTIuNDktMi4xOC0zLjc2LTQuOTUtMy43Ni0xLjc4LDAtNC4wOSwuNzctNC44NiwyLjMxbC0xMy4zMSwzNC4wMS02LjcxLTE1LjMzYy0uNy0xLjU0LTIuODctMi4zMS00LjY1LTIuMzEtMi43NiwwLTUuMDksMS4yNy01LjA5LDMuNzYsMCwuNTUsMS42NCwzLjU2LDEuNjQsMy41NmgwWiI+PC9wYXRoPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4IDQ4KSBzY2FsZSgwLjM0KSByb3RhdGUoMTUgMzIgMzIpIiBkPSJNMTMuODksMzIuNjVsMTAuMjUsMjIuMWMuOCwxLjc4LDMsMi42NSw0LjczLDIuNjVzNC4xOC0xLjA2LDUtMi44MUw1MS40MiwxMmMuMjctLjUyLC4zOS0xLjA1LC4zOS0xLjU5LDAtMi40OS0yLjE4LTMuNzYtNC45NS0zLjc2LTEuNzgsMC00LjA5LC43Ny00Ljg2LDIuMzFsLTEzLjMxLDM0LjAxLTYuNzEtMTUuMzNjLS43LTEuNTQtMi44Ny0yLjMxLTQuNjUtMi4zMS0yLjc2LDAtNS4wOSwxLjI3LTUuMDksMy43NiwwLC41NSwxLjY0LDMuNTYsMS42NCwzLjU2aDBaIj48L3BhdGg+PC9nPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNjAiIGZpbGw9InVybCgjdCkiPjwvcmVjdD48L3N2Zz4=") left top/80px 80px repeat;opacity:0.07;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 65%);mask-image:linear-gradient(to right,transparent 0%,black 65%);}
+  .lane-expanded-topbar > *{position:relative;z-index:1;}
+  .lane-expanded-name{font-size:22px;font-weight:900;letter-spacing:-0.02em;}
+  .lane-expanded-desc{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;}
+  .lane-expanded-close{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:7px 14px;font-size:12px;font-weight:700;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:color 0.12s,border-color 0.12s;}
+  .lane-expanded-close:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .lane-expanded-stats{display:flex;gap:12px;padding:12px 24px;background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
+  .lane-expanded-body{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;align-content:start;}
+  .stats-bar{background:#1c1262;border-top:1px solid rgba(255,255,255,0.1);padding:8px 20px;display:flex;gap:24px;align-items:center;flex-shrink:0;}
+  .stat-item{font-size:11px;color:rgba(255,255,255,0.4);}
+  .stat-item strong{font-size:14px;font-weight:900;margin-right:4px;}
+  .stat-green strong{color:#04D3AA;}
+  .stat-yellow strong{color:#549CFF;}
+  .stat-red strong{color:#FA6496;}
+  .stat-total strong{color:#fff;}
+
+  /* ── Participant ── */
+  #participant{display:flex;flex-direction:column;min-height:100vh;}
+  .part-topbar{background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.12);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;}
+  .part-topbar-title{font-size:13px;font-weight:900;letter-spacing:-0.02em;}
+  .part-topbar-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+  .part-body{flex:1;padding:18px;max-width:540px;margin:0 auto;width:100%;}
+
+  /* Name input */
+  .part-name-wrap{background:#1c1262;border:1px solid rgba(255,255,255,0.1);border-top:4px solid #6404DA;border-radius:2px;padding:18px;margin-bottom:20px;}
+  .part-name-label{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .part-name-row{display:flex;gap:8px;}
+  .part-name-input{flex:1;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;font-family:'Inter',system-ui,sans-serif;padding:9px 12px;outline:none;}
+  .part-name-btn{background:#04D3AA;color:#120A48;border:none;border-radius:2px;padding:9px 16px;font-weight:700;font-size:13px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;}
+  .part-name-set{font-size:12px;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:8px;}
+  .part-name-change{background:none;border:none;color:#6404DA;font-size:12px;cursor:pointer;padding:0;font-weight:700;font-family:'Inter',system-ui,sans-serif;}
+
+  /* Lane picker */
+  .part-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
+  .lane-picker{display:flex;flex-direction:column;gap:7px;margin-bottom:20px;}
+  .lane-pick-btn{background:#1c1262;border:1px solid rgba(255,255,255,0.1);border-top:3px solid rgba(100,4,218,0.3);border-radius:2px;padding:12px 14px;cursor:pointer;text-align:left;font-family:'Inter',system-ui,sans-serif;transition:border-color 0.15s,background 0.15s;}
+  .lane-pick-btn:hover,.lane-pick-btn.selected{border-top-color:#6404DA;background:#1e1470;}
+  .lane-pick-name{font-size:14px;font-weight:700;color:#fff;}
+  .lane-pick-desc{font-size:11px;color:rgba(255,255,255,0.38);margin-top:3px;line-height:1.5;}
+  .lane-pick-counts{display:flex;gap:6px;margin-top:6px;}
+
+  /* Note form */
+  .note-form{background:#1c1262;border:1px solid rgba(255,255,255,0.1);border-top:4px solid #6404DA;border-radius:2px;padding:18px;margin-bottom:20px;animation:fadeSlide 0.2s ease;}
+  .note-form-lane{font-size:15px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;}
+  .note-form-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:14px;line-height:1.55;}
+  .color-picker-label{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .color-options{display:flex;gap:8px;margin-bottom:14px;}
+  .color-opt{flex:1;border:2px solid transparent;border-radius:2px;padding:10px 6px;cursor:pointer;text-align:center;font-size:11px;font-weight:700;font-family:'Inter',system-ui,sans-serif;transition:border-color 0.15s;}
+  .color-opt.green{background:rgba(4,211,170,0.1);color:#04D3AA;border-top:2px solid rgba(4,211,170,0.2);}
+  .color-opt.yellow{background:rgba(84,156,255,0.1);color:#549CFF;border-top:2px solid rgba(84,156,255,0.2);}
+  .color-opt.red{background:rgba(250,100,150,0.1);color:#FA6496;border-top:2px solid rgba(250,100,150,0.2);}
+  .color-opt.green.selected{border:2px solid #04D3AA;}
+  .color-opt.yellow.selected{border:2px solid #549CFF;}
+  .color-opt.red.selected{border:2px solid #FA6496;}
+  .note-textarea{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;font-family:'Inter',system-ui,sans-serif;padding:11px 12px;outline:none;resize:vertical;min-height:90px;line-height:1.6;margin-bottom:14px;}
+  .note-submit{width:100%;background:#6404DA;color:#fff;border:none;border-radius:2px;padding:13px;font-weight:800;font-size:15px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:opacity 0.12s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .note-submit:active{transform:translateY(1px);}
+  .note-submit:disabled{opacity:0.35;cursor:default;transform:none;}
+  .note-cancel{width:100%;background:transparent;color:rgba(255,255,255,0.35);border:none;font-size:12px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;margin-top:8px;padding:6px;}
+  .note-cancel:hover{color:rgba(255,255,255,0.7);}
+  .note-success{background:rgba(4,211,170,0.08);border:1px solid rgba(4,211,170,0.3);border-top:3px solid #04D3AA;border-radius:2px;padding:12px 16px;color:#04D3AA;font-weight:700;font-size:14px;text-align:center;margin-bottom:14px;animation:fadeSlide 0.2s ease;}
+
+  /* Participant feed */
+  .part-feed-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
+  .part-note-item{border-radius:2px;padding:10px 12px;margin-bottom:8px;animation:noteIn 0.2s ease;}
+  .part-note-text{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.55;}
+  .part-note-meta{font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;}
+
+  /* ── Modal ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+  .modal-box{background:#1c1262;border:1px solid rgba(255,255,255,0.15);border-top:4px solid #6404DA;border-radius:2px;padding:24px;width:100%;max-width:440px;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
+  .modal-title{font-size:17px;font-weight:900;letter-spacing:-0.02em;margin-bottom:4px;}
+  .modal-sub{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;}
+  .modal-label{display:block;font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:7px;}
+  .modal-input{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;font-family:'Inter',system-ui,sans-serif;padding:9px 12px;outline:none;margin-bottom:14px;}
+  .modal-textarea{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:13px;font-family:'Inter',system-ui,sans-serif;padding:9px 12px;outline:none;margin-bottom:14px;resize:vertical;min-height:70px;line-height:1.55;}
+  .modal-warn{background:rgba(250,100,150,0.1);border:1px solid rgba(250,100,150,0.3);border-radius:2px;padding:12px 14px;color:#FA6496;font-size:13px;margin-bottom:20px;line-height:1.55;}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;}
+  .modal-btn-cancel{background:transparent;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.15);border-radius:2px;padding:9px 18px;font-size:13px;font-weight:600;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:color 0.12s,border-color 0.12s;}
+  .modal-btn-cancel:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .modal-btn-save{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-size:13px;font-weight:700;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .modal-btn-save:active{transform:translateY(1px);}
+  .modal-btn-delete{background:#FA6496;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-size:13px;font-weight:700;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .modal-btn-delete:active{transform:translateY(1px);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="loading">
+    <div style="font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;">BASWARE</div>
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.35);margin-top:4px;">Connecting to session…</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAB2ZwZHBhk9GLcAeeNIs47Lwb531yP0Ug",
+  authDomain: "basware-denver-hbr-2026.firebaseapp.com",
+  databaseURL: "https://basware-denver-hbr-2026-default-rtdb.firebaseio.com",
+  projectId: "basware-denver-hbr-2026",
+  storageBucket: "basware-denver-hbr-2026.firebasestorage.app",
+  messagingSenderId: "1058060933587",
+  appId: "1:1058060933587:web:442aed2c14100a7c283726"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+const STATE_REF = ref(db, "sticky-board");
+
+// ── Default lanes ─────────────────────────────────────────────────────────
+const DEFAULT_LANES = [
+  { id:"l1", name:"Qualification", desc:"What opportunities are right for this approach? When should they happen?", assumptions:[] },
+  { id:"l2", name:"Team Alignment", desc:"Who is involved from Basware? How do we prep internally so everyone is on the same page?", assumptions:[] },
+  { id:"l3", name:"Assets", desc:"What do we take to the meeting? Where does it come from? Who is responsible for making it?", assumptions:[] },
+  { id:"l4", name:"The Day Itself", desc:"Commanding the room, making it flow, execution.", assumptions:[] },
+  { id:"l5", name:"Takeaways & Next Steps", desc:"What leaves with the customer? How do we capture and act on outcomes?", assumptions:[] }
+];
+
+function defaultState() {
+  return { lanes: DEFAULT_LANES, notes: [] };
+  // notes: [{ id, laneId, text, color, author, ts }]
+}
+
+let appState = null;
+let currentView = "loading";
+
+async function saveState(s) {
+  appState = s;
+  const clean = JSON.parse(JSON.stringify(s, (k,v) => v === null ? undefined : v));
+  try { await set(STATE_REF, clean); }
+  catch(err) { console.error("Firebase write failed:", err); throw err; }
+}
+
+onValue(STATE_REF, (snapshot) => {
+  const data = snapshot.val();
+  if (!data) {
+    appState = defaultState();
+    set(STATE_REF, appState);
+  } else {
+    appState = data;
+    if (!Array.isArray(appState.lanes)) appState.lanes = DEFAULT_LANES;
+    if (!Array.isArray(appState.notes)) appState.notes = [];
+    appState.lanes.forEach(l=>{ if(!Array.isArray(l.assumptions)) l.assumptions=[]; });
+  }
+  if (currentView === "loading") {
+    document.getElementById("loading").classList.add("hidden");
+    showChooser();
+  } else {
+    rerenderCurrentView();
+  }
+});
+
+// ── Routing ───────────────────────────────────────────────────────────────
+function showChooser()    { currentView="chooser";     renderChooser(); }
+function showBoard()      { currentView="board"; showEditLanes=false; renderBoard(); }
+function showParticipant(){ currentView="participant"; partSelectedLane=null; partSubmitted=false; partText=""; partColor="green"; renderParticipant(); }
+function rerenderCurrentView() {
+  if(currentView==="board") renderBoard();
+  if(currentView==="participant") renderParticipant();
+  // If a lane is expanded, refresh it live as notes come in
+  if(expandedLane) renderExpandedLane();
+}
+
+// ── CHOOSER ───────────────────────────────────────────────────────────────
+function renderChooser() {
+  document.getElementById("app").innerHTML=`
+  <div id="chooser">
+    <div class="chooser-inner">
+      <div class="chooser-brand">BASWARE</div>
+      <div class="chooser-title">Onsite Design Workshop:<br>Process Board</div>
+      <div class="chooser-sub">Mile High Focus · Denver HBR</div>
+      <div class="chooser-divider"></div>
+      <button id="btn-board" class="chooser-btn btn-purple">Facilitator / Big Screen</button>
+      <button id="btn-part" class="chooser-btn btn-teal">Add My Notes (Participants)</button>
+      <div class="chooser-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#04D3AA;"></div>Working Well</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#549CFF;"></div>Neutral</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FA6496;"></div>Needs Work</div>
+      </div>
+      <div class="chooser-note">Facilitators manage the board on the big screen.<br>Participants add notes from their phone or laptop.</div>
+    </div>
+  </div>`;
+  document.getElementById("btn-board").onclick = showBoard;
+  document.getElementById("btn-part").onclick  = showParticipant;
+}
+
+// ── BOARD (FACILITATOR) ───────────────────────────────────────────────────
+let showEditLanes = false;
+let expandedLane = null;
+
+function renderBoard() {
+  const app = document.getElementById("app");
+  const totalNotes = appState.notes.length;
+  const greenCount = appState.notes.filter(n=>n.color==="green").length;
+  const yellowCount = appState.notes.filter(n=>n.color==="yellow").length;
+  const redCount = appState.notes.filter(n=>n.color==="red").length;
+
+  // Build lanes
+  const LANE_COLORS = ['#6404DA','#04D3AA','#FA6496','#549CFF','#6404DA','#04D3AA','#FA6496','#549CFF'];
+  const lanesHTML = appState.lanes.map((lane, laneIdx) => {
+    const laneNotes = appState.notes.filter(n=>n.laneId===lane.id);
+    const lg=laneNotes.filter(n=>n.color==="green").length;
+    const ly=laneNotes.filter(n=>n.color==="yellow").length;
+    const lr=laneNotes.filter(n=>n.color==="red").length;
+    const notesHTML = laneNotes.length===0
+      ? `<div class="lane-empty">No notes yet</div>`
+      : [...laneNotes].reverse().map(note=>`
+          <div class="sticky sticky-${note.color}">
+            <div class="sticky-actions">
+              <button class="sticky-btn edit" data-noteid="${note.id}" title="Edit">Edit</button>
+              <button class="sticky-btn del" data-noteid="${note.id}" title="Delete">Del</button>
+            </div>
+            <div class="sticky-text">${esc(note.text)}</div>
+            <div class="sticky-author">${esc(note.author||'Anonymous')} · ${fmt(note.ts)}</div>
+          </div>`).join("");
+    const assumptionsHTML = `
+      <div class="lane-assumptions">
+        <div class="lane-assumptions-label">
+          Current Assumptions
+          <button class="lane-assumptions-edit-btn" data-laneid="${lane.id}">Edit</button>
+        </div>
+        ${(lane.assumptions||[]).length===0
+          ? `<div class="lane-assumptions-empty">No assumptions set yet</div>`
+          : (lane.assumptions||[]).map(a=>`<div class="lane-assumption-item">${esc(a)}</div>`).join("")}
+      </div>`;
+    return `<div class="lane" style="border-top:4px solid ${LANE_COLORS[laneIdx % LANE_COLORS.length]}">
+      <div class="lane-header">
+        <button class="lane-expand-btn" data-laneid="${lane.id}" title="Expand lane">Expand</button>
+        <div class="lane-name">${esc(lane.name)}</div>
+        <div class="lane-desc">${esc(lane.desc)}</div>
+        <div class="lane-count">
+          ${lg>0?`<span class="lane-count-pill pill-green">${lg} good</span>`:''}
+          ${ly>0?`<span class="lane-count-pill pill-yellow">${ly} neutral</span>`:''}
+          ${lr>0?`<span class="lane-count-pill pill-red">${lr} needs work</span>`:''}
+          ${laneNotes.length===0?`<span style="font-size:10px;color:rgba(255,255,255,0.2);">No notes</span>`:''}
+        </div>
+        ${assumptionsHTML}
+      </div>
+      <div class="lane-notes">${notesHTML}</div>
+    </div>`;
+  }).join("");
+
+  // Edit lanes panel
+  const editPanelHTML = showEditLanes ? `
+    <div class="edit-lanes-panel">
+      <div class="edit-lanes-header">
+        <div class="edit-lanes-title">Edit Lanes</div>
+        <button class="btn-icon" id="btn-close-edit-lanes">✕</button>
+      </div>
+      <div class="edit-lanes-body">
+        ${appState.lanes.map((lane,i)=>`
+          <div class="edit-lane-row" data-laneid="${lane.id}">
+            <input class="edit-lane-name-input" data-laneid="${lane.id}" value="${esc(lane.name)}" placeholder="Lane name…"/>
+            <textarea class="edit-lane-desc-input" data-laneid="${lane.id}" placeholder="Short description…">${esc(lane.desc)}</textarea>
+            <div style="font-size:9px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin:8px 0 5px;">Assumptions (one per line)</div>
+            <textarea class="edit-lane-assumptions-input" data-laneid="${lane.id}" placeholder="e.g. AE qualifies the opportunity alone…" style="width:100%;background:#120A48;border:1px solid rgba(4,211,170,0.15);border-radius:2px;color:rgba(255,255,255,0.6);font-size:11px;font-family:'Inter',system-ui,sans-serif;outline:none;resize:vertical;min-height:60px;padding:6px 8px;line-height:1.6;">${esc((lane.assumptions||[]).join('\n'))}</textarea>
+            <div class="edit-lane-actions">
+              ${i>0?`<button class="btn-icon move-up" data-laneid="${lane.id}" title="Move up">↑</button>`:''}
+              ${i<appState.lanes.length-1?`<button class="btn-icon move-down" data-laneid="${lane.id}" title="Move down">↓</button>`:''}
+              <button class="btn-icon delete-lane" data-laneid="${lane.id}" title="Delete lane" style="color:rgba(250,100,150,0.7);border-color:rgba(250,100,150,0.25);">Delete</button>
+            </div>
+          </div>`).join("")}
+        <div class="add-lane-form">
+          <div class="add-lane-label">Add Lane</div>
+          <input id="new-lane-name" class="add-lane-input" placeholder="Lane name…"/>
+          <input id="new-lane-desc" class="add-lane-input" placeholder="Short description (optional)…" style="margin-top:6px;"/>
+          <button id="btn-add-lane" class="add-lane-btn" disabled>Add Lane</button>
+        </div>
+      </div>
+    </div>` : '';
+
+  app.innerHTML=`
+  <div id="board">
+    <div class="board-topbar">
+      <div>
+        <div class="board-title">Onsite Design Workshop: Process Board</div>
+        <div class="board-subtitle">MILE HIGH FOCUS · DENVER HBR</div>
+      </div>
+      <div class="topbar-right">
+        <button id="btn-edit-lanes" class="btn-small ${showEditLanes?'btn-sm-teal':'btn-sm-ghost'}">${showEditLanes?'Done Editing':'Edit Lanes'}</button>
+        <button id="btn-export-board" class="btn-small btn-sm-ghost">Export CSV</button>
+        <button id="btn-back-roles" class="btn-small btn-sm-ghost">← Roles</button>
+        <div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex:1;overflow:hidden;">
+      <div class="board-body" style="flex:1;">
+        <div class="lanes-wrap">${lanesHTML}</div>
+      </div>
+      ${editPanelHTML}
+    </div>
+    <div class="stats-bar">
+      <div class="stat-item stat-total"><strong>${totalNotes}</strong> total notes</div>
+      <div class="stat-item stat-green"><strong>${greenCount}</strong> working well</div>
+      <div class="stat-item stat-yellow"><strong>${yellowCount}</strong> neutral</div>
+      <div class="stat-item stat-red"><strong>${redCount}</strong> needs work</div>
+      <div style="margin-left:auto;font-size:11px;color:rgba(255,255,255,0.2);">Participants: open this page and tap "Add My Notes"</div>
+    </div>
+  </div>`;
+
+  // Topbar bindings
+  document.getElementById("btn-back-roles").onclick = showChooser;
+  document.getElementById("btn-export-board").onclick = exportCSV;
+  document.getElementById("btn-edit-lanes").onclick = () => { showEditLanes=!showEditLanes; renderBoard(); };
+
+  // Note edit/delete
+  document.querySelectorAll(".sticky-btn.edit").forEach(btn=>{
+    btn.onclick=()=>{
+      const note=appState.notes.find(n=>n.id===btn.dataset.noteid);
+      if(note) showEditNoteModal(note);
+    };
+  });
+  document.querySelectorAll(".sticky-btn.del").forEach(btn=>{
+    btn.onclick=()=>{
+      const note=appState.notes.find(n=>n.id===btn.dataset.noteid);
+      if(note) showDeleteNoteModal(note);
+    };
+  });
+
+  // Expand lane buttons
+  document.querySelectorAll(".lane-expand-btn").forEach(btn=>{
+    btn.onclick=()=>{
+      const lane=appState.lanes.find(l=>l.id===btn.dataset.laneid);
+      if(lane) showExpandedLane(lane);
+    };
+  });
+
+  // Inline assumptions edit buttons
+  document.querySelectorAll(".lane-assumptions-edit-btn").forEach(btn=>{
+    btn.onclick=()=>{
+      const lane=appState.lanes.find(l=>l.id===btn.dataset.laneid);
+      if(lane) showEditAssumptionsModal(lane);
+    };
+  });
+
+  if(!showEditLanes) return;
+
+  // Edit lanes bindings
+  document.getElementById("btn-close-edit-lanes").onclick=()=>{ showEditLanes=false; renderBoard(); };
+
+  // Live-edit lane names and descriptions
+  document.querySelectorAll(".edit-lane-name-input").forEach(input=>{
+    input.addEventListener("change",async()=>{
+      const id=input.dataset.laneid;
+      const lanes=appState.lanes.map(l=>l.id===id?{...l,name:input.value.trim()||l.name}:l);
+      await saveState({...appState,lanes});
+    });
+  });
+  document.querySelectorAll(".edit-lane-desc-input").forEach(ta=>{
+    ta.addEventListener("change",async()=>{
+      const id=ta.dataset.laneid;
+      const lanes=appState.lanes.map(l=>l.id===id?{...l,desc:ta.value.trim()}:l);
+      await saveState({...appState,lanes});
+    });
+  });
+  document.querySelectorAll(".edit-lane-assumptions-input").forEach(ta=>{
+    ta.addEventListener("change",async()=>{
+      const id=ta.dataset.laneid;
+      const assumptions=ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
+      const lanes=appState.lanes.map(l=>l.id===id?{...l,assumptions}:l);
+      await saveState({...appState,lanes});
+    });
+  });
+
+  // Move up/down
+  document.querySelectorAll(".move-up").forEach(btn=>{
+    btn.onclick=async()=>{
+      const idx=appState.lanes.findIndex(l=>l.id===btn.dataset.laneid);
+      if(idx<=0) return;
+      const lanes=[...appState.lanes];
+      [lanes[idx-1],lanes[idx]]=[lanes[idx],lanes[idx-1]];
+      await saveState({...appState,lanes});
+    };
+  });
+  document.querySelectorAll(".move-down").forEach(btn=>{
+    btn.onclick=async()=>{
+      const idx=appState.lanes.findIndex(l=>l.id===btn.dataset.laneid);
+      if(idx>=appState.lanes.length-1) return;
+      const lanes=[...appState.lanes];
+      [lanes[idx],lanes[idx+1]]=[lanes[idx+1],lanes[idx]];
+      await saveState({...appState,lanes});
+    };
+  });
+
+  // Delete lane
+  document.querySelectorAll(".delete-lane").forEach(btn=>{
+    btn.onclick=()=>{
+      const lane=appState.lanes.find(l=>l.id===btn.dataset.laneid);
+      if(lane) showDeleteLaneModal(lane);
+    };
+  });
+
+  // Add lane
+  const newNameInput=document.getElementById("new-lane-name");
+  const newDescInput=document.getElementById("new-lane-desc");
+  const addLaneBtn=document.getElementById("btn-add-lane");
+  newNameInput.addEventListener("input",()=>{ addLaneBtn.disabled=!newNameInput.value.trim(); });
+  addLaneBtn.onclick=async()=>{
+    const name=newNameInput.value.trim();
+    if(!name) return;
+    const newLane={id:"l"+Date.now(),name,desc:newDescInput.value.trim()};
+    const lanes=[...appState.lanes,newLane];
+    await saveState({...appState,lanes});
+  };
+}
+
+// ── PARTICIPANT ───────────────────────────────────────────────────────────
+let partName="";
+let partSelectedLane=null;
+let partColor="green";
+let partText="";
+let partSubmitted=false;
+let partLastSubmit=null;
+try{ partName=localStorage.getItem("wb-part-name")||""; }catch{}
+
+function renderParticipant() {
+  const app=document.getElementById("app");
+
+  // Name section
+  const nameHTML = partName.trim()
+    ? `<div class="part-name-set">
+        Posting as <strong style="color:#04D3AA;margin:0 4px;">${esc(partName.trim())}</strong>
+        <button class="part-name-change" id="btn-change-name">Change</button>
+       </div>`
+    : `<div class="part-name-wrap">
+        <label class="part-name-label">Your name (optional)</label>
+        <div class="part-name-row">
+          <input id="part-name-input" class="part-name-input" placeholder="e.g. Kyle F." value="${esc(partName)}"/>
+          <button id="btn-set-name" class="part-name-btn">Set</button>
+        </div>
+       </div>`;
+
+  // Lane picker
+  const lanesPickHTML = appState.lanes.map(lane=>{
+    const laneNotes=appState.notes.filter(n=>n.laneId===lane.id);
+    const lg=laneNotes.filter(n=>n.color==="green").length;
+    const ly=laneNotes.filter(n=>n.color==="yellow").length;
+    const lr=laneNotes.filter(n=>n.color==="red").length;
+    const isSelected=partSelectedLane===lane.id;
+    const assumptionsHTML=(lane.assumptions||[]).length>0
+      ?`<div class="part-assumptions" style="margin-top:8px;">
+          <div class="part-assumptions-label">Current Assumptions</div>
+          ${(lane.assumptions||[]).map(a=>`<div class="part-assumption-item">${esc(a)}</div>`).join("")}
+        </div>`:'';
+    return `<button class="lane-pick-btn${isSelected?' selected':''}" data-laneid="${lane.id}">
+      <div class="lane-pick-name">${esc(lane.name)}</div>
+      <div class="lane-pick-desc">${esc(lane.desc)}</div>
+      <div class="lane-pick-counts">
+        ${lg>0?`<span class="lane-count-pill pill-green">${lg}</span>`:''}
+        ${ly>0?`<span class="lane-count-pill pill-yellow">${ly}</span>`:''}
+        ${lr>0?`<span class="lane-count-pill pill-red">${lr}</span>`:''}
+      </div>
+      ${assumptionsHTML}
+    </button>`;
+  }).join("");
+
+  // Note form
+  const selectedLane=partSelectedLane?appState.lanes.find(l=>l.id===partSelectedLane):null;
+  let formHTML="";
+  if(selectedLane){
+    const laneAssumptions=(selectedLane.assumptions||[]);
+    const assumptionsFormHTML = laneAssumptions.length>0
+      ? `<div class="part-assumptions">
+           <div class="part-assumptions-label">Current Assumptions</div>
+           ${laneAssumptions.map(a=>`<div class="part-assumption-item">${esc(a)}</div>`).join("")}
+         </div>`
+      : '';
+    formHTML=`<div class="note-form">
+      ${partSubmitted?`<div class="note-success">Note added to the board.</div>`:''}
+      <div class="note-form-lane">${esc(selectedLane.name)}</div>
+      <div class="note-form-sub">${esc(selectedLane.desc)}</div>
+      ${assumptionsFormHTML}
+      <label class="color-picker-label">How do you rate this?</label>
+      <div class="color-options">
+        <div class="color-opt green${partColor==='green'?' selected':''}" data-color="green">Working Well</div>
+        <div class="color-opt yellow${partColor==='yellow'?' selected':''}" data-color="yellow">Neutral</div>
+        <div class="color-opt red${partColor==='red'?' selected':''}" data-color="red">Needs Work</div>
+      </div>
+      <textarea id="part-note-text" class="note-textarea" placeholder="What do you think about this stage? Be specific…"></textarea>
+      <button id="btn-submit-note" class="note-submit" disabled>Post to Board</button>
+      <button id="btn-cancel-note" class="note-cancel">← Back to lanes</button>
+    </div>`;
+  }
+
+  // Recent notes for selected lane
+  const recentNotes = partSelectedLane
+    ? appState.notes.filter(n=>n.laneId===partSelectedLane).slice(-5).reverse()
+    : [];
+  const recentHTML = recentNotes.length>0 ? `
+    <div class="part-feed-label">Recent notes in this lane</div>
+    ${recentNotes.map(n=>`
+      <div class="part-note-item sticky-${n.color}">
+        <div class="part-note-text">${esc(n.text)}</div>
+        <div class="part-note-meta">${esc(n.author||'Anonymous')} · ${fmt(n.ts)}</div>
+      </div>`).join("")}` : '';
+
+  app.innerHTML=`
+  <div id="participant">
+    <div class="part-topbar">
+      <div>
+        <div class="part-topbar-title">Onsite Design Workshop: Process Board</div>
+        <div class="part-topbar-sub">Mile High Focus · Denver HBR</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="btn-back-roles-part" class="btn-small btn-sm-ghost">← Roles</button>
+        <div style="font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:2px;">BASWARE</div>
+      </div>
+    </div>
+    <div class="part-body">
+      ${nameHTML}
+      ${formHTML}
+      ${!formHTML?`<div class="part-section-label">Select a lane to add a note</div>
+      <div class="lane-picker">${lanesPickHTML}</div>`:''}
+      ${recentHTML}
+    </div>
+  </div>`;
+
+  // Back to roles
+  document.getElementById("btn-back-roles-part").onclick=showChooser;
+
+  // Name bindings
+  document.getElementById("btn-change-name")?.addEventListener("click",()=>{
+    partName=""; try{localStorage.removeItem("wb-part-name");}catch{}
+    renderParticipant();
+  });
+  const nameInput=document.getElementById("part-name-input");
+  const nameBtn=document.getElementById("btn-set-name");
+  if(nameInput){
+    nameInput.addEventListener("input",()=>{ partName=nameInput.value; });
+    nameInput.addEventListener("keydown",e=>{ if(e.key==="Enter") setName(); });
+  }
+  nameBtn?.addEventListener("click", setName);
+  function setName(){
+    const val=document.getElementById("part-name-input")?.value?.trim()||"";
+    partName=val;
+    try{ if(val) localStorage.setItem("wb-part-name",val); }catch{}
+    renderParticipant();
+  }
+
+  // Lane selection
+  document.querySelectorAll(".lane-pick-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      partSelectedLane=btn.dataset.laneid;
+      partSubmitted=false; partText="";
+      renderParticipant();
+    });
+  });
+
+  // Color picker
+  document.querySelectorAll(".color-opt").forEach(el=>{
+    el.addEventListener("click",()=>{ partColor=el.dataset.color; renderParticipant(); });
+  });
+
+  // Note textarea
+  const noteTextarea=document.getElementById("part-note-text");
+  const submitBtn=document.getElementById("btn-submit-note");
+  if(noteTextarea){
+    noteTextarea.value=partText;
+    noteTextarea.addEventListener("input",()=>{
+      partText=noteTextarea.value;
+      if(submitBtn) submitBtn.disabled=!noteTextarea.value.trim();
+    });
+    if(submitBtn) submitBtn.disabled=!partText.trim();
+  }
+  document.getElementById("btn-cancel-note")?.addEventListener("click",()=>{
+    partSelectedLane=null; partText=""; partSubmitted=false;
+    renderParticipant();
+  });
+  submitBtn?.addEventListener("click",async()=>{
+    const txt=noteTextarea?.value?.trim();
+    if(!txt||!partSelectedLane) return;
+    const note={id:Date.now()+Math.random()+"",laneId:partSelectedLane,text:txt,color:partColor,author:partName.trim(),ts:Date.now()};
+    const notes=[...appState.notes,note];
+    partText=""; partSubmitted=true;
+    await saveState({...appState,notes});
+    setTimeout(()=>{ partSubmitted=false; renderParticipant(); },2500);
+  });
+}
+
+// ── EXPANDED LANE ─────────────────────────────────────────────────────────
+function showExpandedLane(lane) {
+  // Build a live-updating overlay; re-render when Firebase updates
+  expandedLane = lane.id;
+  renderExpandedLane();
+}
+
+function renderExpandedLane() {
+  // Remove any existing overlay
+  document.getElementById("lane-expanded-overlay")?.remove();
+  if(!expandedLane) return;
+
+  const lane = appState.lanes.find(l=>l.id===expandedLane);
+  if(!lane) { expandedLane=null; return; }
+
+  const laneNotes = appState.notes.filter(n=>n.laneId===lane.id);
+  const lg = laneNotes.filter(n=>n.color==="green").length;
+  const ly = laneNotes.filter(n=>n.color==="yellow").length;
+  const lr = laneNotes.filter(n=>n.color==="red").length;
+
+  const notesHTML = laneNotes.length===0
+    ? `<div style="color:rgba(255,255,255,0.18);font-style:italic;font-size:14px;grid-column:1/-1;text-align:center;padding:40px 0;">No notes yet in this lane.</div>`
+    : [...laneNotes].reverse().map(note=>`
+        <div class="sticky sticky-${note.color}" style="font-size:15px;">
+          <div class="sticky-actions">
+            <button class="sticky-btn edit exp-edit" data-noteid="${note.id}" title="Edit">Edit</button>
+            <button class="sticky-btn del exp-del" data-noteid="${note.id}" title="Delete">Del</button>
+          </div>
+          <div class="sticky-text" style="font-size:15px;">${esc(note.text)}</div>
+          <div class="sticky-author">${esc(note.author||'Anonymous')} · ${fmt(note.ts)}</div>
+        </div>`).join("");
+
+  const assumptionsExpandHTML = (lane.assumptions||[]).length>0
+    ? `<div style="padding:10px 24px;background:#0d0735;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+        <span style="font-size:9px;font-weight:700;color:#04D3AA;letter-spacing:0.08em;text-transform:uppercase;margin-right:4px;">Assumptions:</span>
+        ${(lane.assumptions||[]).map(a=>`<span style="font-size:11px;color:rgba(255,255,255,0.55);background:rgba(4,211,170,0.07);border:1px solid rgba(4,211,170,0.15);border-radius:2px;padding:3px 8px;">${esc(a)}</span>`).join("")}
+       </div>` : '';
+
+  const overlay = document.createElement("div");
+  overlay.className = "lane-expanded-overlay";
+  overlay.id = "lane-expanded-overlay";
+  overlay.innerHTML = `
+    <div class="lane-expanded-topbar">
+      <div>
+        <div class="lane-expanded-name">${esc(lane.name)}</div>
+        <div class="lane-expanded-desc">${esc(lane.desc)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.35);font-weight:500;">${laneNotes.length} note${laneNotes.length!==1?'s':''}</div>
+        <button class="lane-expanded-close" id="btn-close-expanded">Close</button>
+      </div>
+    </div>
+    ${assumptionsExpandHTML}
+    <div class="lane-expanded-stats">
+      ${lg>0?`<span class="lane-count-pill pill-green">${lg} working well</span>`:''}
+      ${ly>0?`<span class="lane-count-pill pill-yellow">${ly} neutral</span>`:''}
+      ${lr>0?`<span class="lane-count-pill pill-red">${lr} needs work</span>`:''}
+      ${laneNotes.length===0?`<span style="font-size:11px;color:rgba(255,255,255,0.18);font-style:italic;">Waiting for notes…</span>`:''}
+    </div>
+    <div class="lane-expanded-body">${notesHTML}</div>`;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("btn-close-expanded").onclick=()=>{
+    expandedLane=null;
+    overlay.remove();
+  };
+
+  // Edit/delete from expanded view
+  overlay.querySelectorAll(".exp-edit").forEach(btn=>{
+    btn.onclick=()=>{
+      const note=appState.notes.find(n=>n.id===btn.dataset.noteid);
+      if(note) showEditNoteModal(note);
+    };
+  });
+  overlay.querySelectorAll(".exp-del").forEach(btn=>{
+    btn.onclick=()=>{
+      const note=appState.notes.find(n=>n.id===btn.dataset.noteid);
+      if(note) showDeleteNoteModal(note);
+    };
+  });
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────
+function showEditAssumptionsModal(lane){
+  const overlay=document.createElement("div");
+  overlay.className="modal-overlay";
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-title">Edit Assumptions</div>
+      <div class="modal-sub">${esc(lane.name)}</div>
+      <div class="assumptions-help">Enter one assumption per line. These are the current operating conditions participants are reacting to.</div>
+      <label class="modal-label">Assumptions (one per line)</label>
+      <textarea id="modal-assumptions" class="modal-textarea" style="min-height:160px;">${esc((lane.assumptions||[]).join('\n'))}</textarea>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-save" id="modal-save">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("modal-cancel").onclick=()=>overlay.remove();
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) overlay.remove(); });
+  document.getElementById("modal-save").onclick=async()=>{
+    const val=document.getElementById("modal-assumptions").value;
+    const assumptions=val.split('\n').map(s=>s.trim()).filter(Boolean);
+    const lanes=appState.lanes.map(l=>l.id===lane.id?{...l,assumptions}:l);
+    overlay.remove();
+    await saveState({...appState,lanes});
+  };
+}
+
+function showEditNoteModal(note){
+  const lane=appState.lanes.find(l=>l.id===note.laneId);
+  const overlay=document.createElement("div");
+  overlay.className="modal-overlay";
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-title">Edit Note</div>
+      <div class="modal-sub">${esc(lane?.name||'')}</div>
+      <label class="modal-label">Note Text</label>
+      <textarea id="modal-note-text" class="modal-textarea">${esc(note.text)}</textarea>
+      <label class="modal-label">Author</label>
+      <input id="modal-note-author" class="modal-input" value="${esc(note.author||'')}"/>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-save" id="modal-save">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("modal-cancel").onclick=()=>overlay.remove();
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) overlay.remove(); });
+  document.getElementById("modal-save").onclick=async()=>{
+    const txt=document.getElementById("modal-note-text").value.trim();
+    const author=document.getElementById("modal-note-author").value.trim();
+    if(!txt) return;
+    const notes=appState.notes.map(n=>n.id===note.id?{...n,text:txt,author}:n);
+    overlay.remove();
+    await saveState({...appState,notes});
+  };
+}
+
+function showDeleteNoteModal(note){
+  const overlay=document.createElement("div");
+  overlay.className="modal-overlay";
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-title">Delete Note</div>
+      <div class="modal-warn">"${esc(note.text)}"<br><br>This cannot be undone.</div>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-delete" id="modal-confirm">Yes, Delete</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("modal-cancel").onclick=()=>overlay.remove();
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) overlay.remove(); });
+  document.getElementById("modal-confirm").onclick=async()=>{
+    const notes=appState.notes.filter(n=>n.id!==note.id);
+    overlay.remove();
+    await saveState({...appState,notes});
+  };
+}
+
+function showDeleteLaneModal(lane){
+  const noteCount=appState.notes.filter(n=>n.laneId===lane.id).length;
+  const overlay=document.createElement("div");
+  overlay.className="modal-overlay";
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-title">Delete Lane</div>
+      <div class="modal-warn">
+        Delete <strong>${esc(lane.name)}</strong>${noteCount>0?` and all <strong>${noteCount} note${noteCount!==1?'s':''}</strong> in it`:''}.
+        This cannot be undone.
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" id="modal-cancel">Cancel</button>
+        <button class="modal-btn-delete" id="modal-confirm">Yes, Delete</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById("modal-cancel").onclick=()=>overlay.remove();
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) overlay.remove(); });
+  document.getElementById("modal-confirm").onclick=async()=>{
+    const lanes=appState.lanes.filter(l=>l.id!==lane.id);
+    const notes=appState.notes.filter(n=>n.laneId!==lane.id);
+    overlay.remove();
+    await saveState({...appState,lanes,notes});
+  };
+}
+
+// ── Export ────────────────────────────────────────────────────────────────
+function exportCSV(){
+  const rows=[["Lane","Rating","Note","Author","Time"]];
+  appState.lanes.forEach(lane=>{
+    const laneNotes=appState.notes.filter(n=>n.laneId===lane.id);
+    if(laneNotes.length===0){
+      rows.push([lane.name,"","","",""]);
+    } else {
+      laneNotes.forEach(n=>{
+        const rating=n.color==="green"?"Working Well":n.color==="yellow"?"Neutral":"Needs Work";
+        rows.push([lane.name,rating,`"${(n.text||'').replace(/"/g,'""')}"`,n.author||"Anonymous",fmt(n.ts)]);
+      });
+    }
+  });
+  const csv=rows.map(r=>r.join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download="Workshop-ProcessBoard.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(ts){ return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+</script>
+</body>
+</html>
