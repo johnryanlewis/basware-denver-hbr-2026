@@ -569,7 +569,7 @@ function renderGroupView() {
   if (!g) { gvSelected=""; renderGroupView(); return; }
 
   var colorMap = {exec:"#04D3AA",biz:"#8B5CF6",ops:"#549CFF",cap:"#04D3AA"};
-  var stagesHTML = STAGES.map(function(stage) {
+  var stagesHTML = STAGES.filter(function(stage){ return stage.id !== "exec"; }).map(function(stage) {
     var entries = g.chain[stage.id]||[];
     var eHTML = entries.map(function(e) {
       return '<div class="gv-entry '+stage.cls+'">' + esc(e.text) +
