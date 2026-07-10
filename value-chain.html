@@ -350,6 +350,14 @@ function renderFacboard() {
     var colorCls = groupColorClass(gIdx);
     var numCls = groupNumClass(gIdx);
     var stagesHTML = STAGES.map(function(stage) {
+      // For exec stage, show the assigned priority automatically — no editable entries needed
+      if (stage.id === "exec") {
+        return '<div class="chain-stage">' +
+          '<div class="chain-stage-label lbl-exec">Executive Priority</div>' +
+          '<div class="chain-stage-entries">' +
+            '<div class="chain-entry exec">'+esc(g.priority)+'</div>' +
+          '</div></div>';
+      }
       var entries = g.chain[stage.id]||[];
       var eHTML = entries.length===0 ? '<div class="chain-empty">Nothing yet</div>' :
         entries.map(function(e) {
@@ -514,13 +522,18 @@ function renderSpotlightOverlay() {
   var colorHex = {green:"#22c55e",purple:"#8B5CF6",blue:"#549CFF",red:"#FA6496",gray:"#8888AA"}[colorName];
 
   var colsHTML = STAGES.map(function(stage) {
-    var entries = g.chain[stage.id]||[];
-    var eHTML = entries.length===0 ? '<div class="spot-empty">Nothing added yet</div>' :
-      entries.map(function(e){
-        return '<div class="spot-entry '+stage.cls+'">'+esc(e.text)+
-          (e.context?'<div class="spot-entry-context">'+esc(e.context)+'</div>':'')+
-          '</div>';
-      }).join("");
+    var eHTML;
+    if (stage.id === "exec") {
+      eHTML = '<div class="spot-entry exec">'+esc(g.priority)+'</div>';
+    } else {
+      var entries = g.chain[stage.id]||[];
+      eHTML = entries.length===0 ? '<div class="spot-empty">Nothing added yet</div>' :
+        entries.map(function(e){
+          return '<div class="spot-entry '+stage.cls+'">'+esc(e.text)+
+            (e.context?'<div class="spot-entry-context">'+esc(e.context)+'</div>':'')+
+            '</div>';
+        }).join("");
+    }
     return '<div><div class="spot-col-label '+stage.cls+'">'+stage.label+'</div>'+eHTML+'</div>';
   }).join("");
 
