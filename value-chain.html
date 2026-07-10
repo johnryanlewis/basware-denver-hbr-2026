@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Value Chain: Group Breakout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Firebase compat (no ES modules needed) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#6404DA;border-radius:3px;}
+  a{color:#04D3AA;}a:hover{color:#fff;}
+  input,textarea{font-family:inherit;}
+  input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.25);}
+  input:focus,textarea:focus{outline:1px solid #04D3AA;outline-offset:2px;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  #app{min-height:100vh;}
+  .hidden{display:none!important;}
+
+  /* Loading */
+  #loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;}
+  .spinner{width:32px;height:32px;border:3px solid #2D2D6B;border-top-color:#6404DA;border-radius:50%;animation:spin 0.8s linear infinite;}
+
+  /* Chooser */
+  #chooser{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;}
+  #chooser::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:520px;height:520px;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgYXJpYS1oaWRkZW49InRydWUiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0xMy44OSwzMi42NWwxMC4yNSwyMi4xYy44LDEuNzgsMywyLjY1LDQuNzMsMi42NXM0LjE4LTEuMDYsNS0yLjgxTDUxLjQyLDEyYy4yNy0uNTIsLjM5LTEuMDUsLjM5LTEuNTksMC0yLjQ5LTIuMTgtMy43Ni00Ljk1LTMuNzYtMS43OCwwLTQuMDksLjc3LTQuODYsMi4zMWwtMTMuMzEsMzQuMDEtNi43MS0xNS4zM2MtLjctMS41NC0yLjg3LTIuMzEtNC42NS0yLjMxLTIuNzYsMC01LjA5LDEuMjctNS4wOSwzLjc2LDAsLjU1LDEuNjQsMy41NiwxLjY0LDMuNTZoMFoiPjwvcGF0aD48L3N2Zz4=") center/contain no-repeat;opacity:0.05;pointer-events:none;}
+  .chooser-inner{text-align:center;max-width:440px;width:100%;position:relative;z-index:1;}
+  .chooser-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+  .chooser-title{font-family:'Inter',system-ui,sans-serif;font-size:44px;font-weight:800;line-height:1.0;letter-spacing:-0.03em;text-wrap:balance;margin-bottom:8px;}
+  .chooser-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:6px;letter-spacing:1px;}
+  .chooser-date{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:4px;}
+  .chooser-divider{width:40px;height:2px;background:#6404DA;margin:0 auto 32px;}
+  .chooser-btn{width:100%;border:none;border-radius:2px;padding:17px 24px;font-family:'Inter',system-ui,sans-serif;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:12px;letter-spacing:0.3px;transition:opacity 0.2s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .chooser-btn:active{transform:translateY(1px);}
+  .btn-purple{background:#6404DA;color:#fff;}
+  .btn-teal{background:#04D3AA;color:#120A48;}
+  .chooser-note{margin-top:24px;font-size:12px;color:rgba(255,255,255,0.3);line-height:1.8;}
+
+  /* Topbar */
+  .topbar{background:#1c1262;border-bottom:1px solid rgba(255,255,255,0.12);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .topbar-title{font-size:17px;font-weight:900;letter-spacing:-0.02em;}
+  .topbar-sub{font-size:11px;color:#04D3AA;font-weight:700;letter-spacing:1.5px;margin-top:3px;}
+  .topbar-right{display:flex;gap:8px;align-items:center;}
+  .btn-sm{border:none;border-radius:2px;padding:6px 12px;font-weight:700;font-size:11px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;white-space:nowrap;transition:opacity 0.12s,transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .btn-sm:active{transform:translateY(1px);}
+  .btn-sm-ghost{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);}
+  .btn-sm-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .btn-sm-teal{background:#04D3AA;color:#120A48;}
+  .btn-sm-purple{background:#6404DA;color:#fff;}
+  .brand-tag .name{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:2px;}
+  .brand-tag .tagline{font-size:10px;color:rgba(255,255,255,0.4);}
+
+  /* Facilitator board */
+  #facboard{display:flex;flex-direction:column;height:100vh;}
+  .facboard-body{flex:1;overflow:hidden;display:flex;}
+  .facboard-main{flex:1;overflow-x:auto;overflow-y:hidden;padding:14px;}
+  .chains-wrap{display:flex;gap:12px;height:100%;min-width:max-content;}
+
+  .chain-col{width:240px;flex-shrink:0;background:#1c1262;border:1px solid rgba(100,4,218,0.3);border-radius:2px;display:flex;flex-direction:column;overflow:hidden;}
+  .chain-col.spotlit{border-color:#04D3AA;box-shadow:0 0 0 1px #04D3AA;}
+  .chain-col-header{padding:10px 12px;background:#160a40;border-bottom:1px solid rgba(100,4,218,0.3);flex-shrink:0;}
+  .chain-col-num{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+  .chain-col-priority{font-size:13px;font-weight:800;color:#fff;line-height:1.3;}
+  .chain-col-actions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+  .chain-col-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:2px;color:rgba(255,255,255,0.4);font-size:10px;padding:3px 7px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .chain-col-btn:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
+  .chain-col-btn.spot-active{background:#04D3AA;color:#120A48;border-color:#04D3AA;}
+  .chain-col-btn.del-btn:hover{color:#FA6496;border-color:rgba(250,100,150,0.5);}
+  .chain-col-body{flex:1;overflow-y:auto;padding:8px;}
+  .chain-stage{margin-bottom:10px;}
+  .chain-stage-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;padding:0 2px;}
+  .lbl-exec{color:#04D3AA;} .lbl-biz{color:#8B5CF6;} .lbl-ops{color:#549CFF;} .lbl-cap{color:#04D3AA;}
+  .chain-stage-entries{display:flex;flex-direction:column;gap:5px;}
+  .chain-entry{background:#120A48;border-radius:2px;padding:7px 28px 7px 10px;font-size:12px;color:#fff;line-height:1.4;position:relative;border-left:2px solid rgba(255,255,255,0.1);}
+  .chain-entry.exec{border-left-color:#04D3AA;}
+  .chain-entry.biz{border-left-color:#8B5CF6;}
+  .chain-entry.ops{border-left-color:#549CFF;}
+  .chain-entry.cap{border-left-color:#04D3AA;background:#0a2a1a;}
+  .entry-context{font-size:11px;color:rgba(255,255,255,0.45);font-style:italic;margin-top:3px;line-height:1.4;}
+  .entry-del-btn{position:absolute;top:5px;right:5px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:2px;color:rgba(255,255,255,0.3);font-size:9px;padding:1px 5px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .entry-del-btn:hover{color:#FA6496;border-color:rgba(250,100,150,0.4);}
+  .chain-empty{font-size:11px;color:rgba(255,255,255,0.2);font-style:italic;padding:3px 2px;}
+
+  /* Group color themes */
+  .group-color-green  .chain-col-header{border-top:3px solid #22c55e;}
+  .group-color-purple .chain-col-header{border-top:3px solid #8B5CF6;}
+  .group-color-blue   .chain-col-header{border-top:3px solid #549CFF;}
+  .group-color-red    .chain-col-header{border-top:3px solid #FA6496;}
+  .group-color-gray   .chain-col-header{border-top:3px solid #8888AA;}
+  .group-color-green.spotlit{border-color:#22c55e!important;box-shadow:0 0 0 1px #22c55e;}
+  .group-color-purple.spotlit{border-color:#8B5CF6!important;box-shadow:0 0 0 1px #8B5CF6;}
+  .group-color-blue.spotlit{border-color:#549CFF!important;box-shadow:0 0 0 1px #549CFF;}
+  .group-color-red.spotlit{border-color:#FA6496!important;box-shadow:0 0 0 1px #FA6496;}
+  .group-color-gray.spotlit{border-color:#8888AA!important;box-shadow:0 0 0 1px #8888AA;}
+  .gc-green{color:#22c55e;} .gc-purple{color:#8B5CF6;} .gc-blue{color:#549CFF;} .gc-red{color:#FA6496;} .gc-gray{color:#8888AA;}
+
+  /* Right panel */
+  .fac-right{width:210px;border-left:1px solid #2D2D6B;padding:14px;display:flex;flex-direction:column;gap:14px;flex-shrink:0;overflow-y:auto;}
+  .panel-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .stat-box{background:#1c1262;border-radius:2px;padding:10px 12px;margin-bottom:8px;}
+  .stat-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;}
+  .stat-value{font-size:24px;font-weight:900;margin-top:2px;}
+  .timer-box{background:#1c1262;border-radius:2px;padding:12px;text-align:center;}
+  .timer-display{font-size:36px;font-weight:900;color:#04D3AA;font-variant-numeric:tabular-nums;letter-spacing:2px;}
+  .timer-sublabel{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;}
+  .timer-controls{display:flex;gap:6px;margin-top:10px;}
+  .timer-btn{flex:1;background:#120A48;border:1px solid rgba(100,4,218,0.4);border-radius:2px;color:#fff;font-size:11px;font-weight:700;padding:7px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .timer-set-row{display:flex;gap:5px;margin-top:8px;align-items:center;justify-content:center;}
+  .timer-set-input{width:48px;background:#120A48;border:1px solid rgba(100,4,218,0.4);border-radius:2px;color:#fff;font-size:13px;font-weight:700;padding:5px 6px;outline:none;text-align:center;font-family:'Inter',system-ui,sans-serif;}
+  .timer-set-label{font-size:10px;color:rgba(255,255,255,0.4);}
+  .timer-set-btn{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .group-row{background:#120A48;border-radius:2px;padding:8px 10px;font-size:12px;border:1px solid rgba(100,4,218,0.2);display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .group-row-name{font-weight:600;color:#fff;}
+  .group-row-priority{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+  /* Stats bar */
+  .stats-bar{background:#1c1262;border-top:1px solid rgba(255,255,255,0.1);padding:8px 20px;display:flex;gap:24px;align-items:center;flex-shrink:0;}
+  .stats-bar-item{font-size:11px;color:rgba(255,255,255,0.4);}
+  .stats-bar-item strong{font-size:14px;font-weight:900;color:#fff;margin-right:4px;}
+
+  /* Spotlight overlay */
+  .spotlight-overlay{position:fixed;inset:0;background:#120A48;z-index:500;display:flex;flex-direction:column;animation:fadeSlide 0.2s ease;}
+  .spot-topbar{background:#1c1262;border-bottom:2px solid #04D3AA;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;overflow:hidden;}
+  .spot-topbar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:44%;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiB2aWV3Qm94PSIwIDAgMTYwIDE2MCIgYXJpYS1oaWRkZW49InRydWUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJ0IiB4PSIwIiB5PSIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxnIGZpbGw9IiNGRkZGRkYiPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwIDEwKSBzY2FsZSgwLjM0KSIgZD0iTTEzLjg5LDMyLjY1bDEwLjI1LDIyLjFjLjgsMS43OCwzLDIuNjUsNC43MywyLjY1czQuMTgtMS4wNiw1LTIuODFMNTEuNDIsMTJjLjI3LS41MiwuMzktMS4wNSwuMzktMS41OSwwLTIuNDktMi4xOC0zLjc2LTQuOTUtMy43Ni0xLjc4LDAtNC4wOSwuNzctNC44NiwyLjMxbC0xMy4zMSwzNC4wMS02LjcxLTE1LjMzYy0uNy0xLjU0LTIuODctMi4zMS00LjY1LTIuMzEtMi43NiwwLTUuMDksMS4yNy01LjA5LDMuNzYsMCwuNTUsMS42NCwzLjU2LDEuNjQsMy41NmgwWiI+PC9wYXRoPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4IDQ4KSBzY2FsZSgwLjM0KSByb3RhdGUoMTUgMzIgMzIpIiBkPSJNMTMuODksMzIuNjVsMTAuMjUsMjIuMWMuOCwxLjc4LDMsMi42NSw0LjczLDIuNjVzNC4xOC0xLjA2LDUtMi44MUw1MS40MiwxMmMuMjctLjUyLC4zOS0xLjA1LC4zOS0xLjU5LDAtMi40OS0yLjE4LTMuNzYtNC45NS0zLjc2LTEuNzgsMC00LjA5LC43Ny00Ljg2LDIuMzFsLTEzLjMxLDM0LjAxLTYuNzEtMTUuMzNjLS43LTEuNTQtMi44Ny0yLjMxLTQuNjUtMi4zMS0yLjc2LDAtNS4wOSwxLjI3LTUuMDksMy43NiwwLC41NSwxLjY0LDMuNTYsMS42NCwzLjU2aDBaIj48L3BhdGg+PC9nPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNjAiIGZpbGw9InVybCgjdCkiPjwvcmVjdD48L3N2Zz4=") left top/80px 80px repeat;opacity:0.07;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 65%);mask-image:linear-gradient(to right,transparent 0%,black 65%);}
+  .spot-topbar > *{position:relative;z-index:1;}
+  .spot-eyebrow{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+  .spot-priority{font-size:26px;font-weight:900;}
+  .spot-group{font-size:13px;color:rgba(255,255,255,0.5);margin-top:3px;}
+  .spot-close{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);border-radius:2px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .spot-body{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-content:start;}
+  .spot-col-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid;margin-bottom:10px;}
+  .spot-col-label.exec{color:#04D3AA;border-color:#04D3AA;}
+  .spot-col-label.biz{color:#8B5CF6;border-color:#8B5CF6;}
+  .spot-col-label.ops{color:#549CFF;border-color:#549CFF;}
+  .spot-col-label.cap{color:#04D3AA;border-color:#04D3AA;}
+  .spot-entry{background:#1c1262;border-radius:2px;padding:13px 15px;font-size:15px;font-weight:600;color:#fff;line-height:1.4;border-left:3px solid;margin-bottom:10px;}
+  .spot-entry.exec{border-left-color:#04D3AA;background:#0d2a24;}
+  .spot-entry.biz{border-left-color:#8B5CF6;}
+  .spot-entry.ops{border-left-color:#549CFF;}
+  .spot-entry.cap{border-left-color:#04D3AA;background:#0a2a1a;}
+  .spot-entry-context{font-size:12px;color:rgba(255,255,255,0.5);font-style:italic;margin-top:6px;font-weight:400;line-height:1.5;}
+  .spot-empty{font-size:13px;color:rgba(255,255,255,0.2);font-style:italic;}
+
+  /* Group view */
+  #groupview{display:flex;flex-direction:column;min-height:100vh;}
+  .gv-body{flex:1;padding:18px;max-width:600px;margin:0 auto;width:100%;}
+  .gv-pick-label{font-size:10px;font-weight:700;color:#8888AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+  .gv-group-btn{width:100%;background:#1c1262;border:1px solid rgba(100,4,218,0.3);border-radius:2px;color:#fff;font-size:14px;font-weight:700;padding:13px 16px;cursor:pointer;text-align:left;margin-bottom:8px;font-family:'Inter',system-ui,sans-serif;transition:border-color 0.15s;}
+  .gv-group-btn:hover{border-color:#6404DA;}
+  .gv-group-priority{font-size:11px;color:#04D3AA;font-weight:600;margin-top:3px;}
+  .gv-priority-banner{background:#1c1262;border:1px solid rgba(100,4,218,0.4);border-top:4px solid #6404DA;border-radius:2px;padding:16px 18px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .gv-priority-banner::after{content:'';position:absolute;right:0;top:0;bottom:0;width:44%;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIiB2aWV3Qm94PSIwIDAgMTYwIDE2MCIgYXJpYS1oaWRkZW49InRydWUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJ0IiB4PSIwIiB5PSIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxnIGZpbGw9IiNGRkZGRkYiPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwIDEwKSBzY2FsZSgwLjM0KSIgZD0iTTEzLjg5LDMyLjY1bDEwLjI1LDIyLjFjLjgsMS43OCwzLDIuNjUsNC43MywyLjY1czQuMTgtMS4wNiw1LTIuODFMNTEuNDIsMTJjLjI3LS41MiwuMzktMS4wNSwuMzktMS41OSwwLTIuNDktMi4xOC0zLjc2LTQuOTUtMy43Ni0xLjc4LDAtNC4wOSwuNzctNC44NiwyLjMxbC0xMy4zMSwzNC4wMS02LjcxLTE1LjMzYy0uNy0xLjU0LTIuODctMi4zMS00LjY1LTIuMzEtMi43NiwwLTUuMDksMS4yNy01LjA5LDMuNzYsMCwuNTUsMS42NCwzLjU2LDEuNjQsMy41NmgwWiI+PC9wYXRoPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ4IDQ4KSBzY2FsZSgwLjM0KSByb3RhdGUoMTUgMzIgMzIpIiBkPSJNMTMuODksMzIuNjVsMTAuMjUsMjIuMWMuOCwxLjc4LDMsMi42NSw0LjczLDIuNjVzNC4xOC0xLjA2LDUtMi44MUw1MS40MiwxMmMuMjctLjUyLC4zOS0xLjA1LC4zOS0xLjU5LDAtMi40OS0yLjE4LTMuNzYtNC45NS0zLjc2LTEuNzgsMC00LjA5LC43Ny00Ljg2LDIuMzFsLTEzLjMxLDM0LjAxLTYuNzEtMTUuMzNjLS43LTEuNTQtMi44Ny0yLjMxLTQuNjUtMi4zMS0yLjc2LDAtNS4wOSwxLjI3LTUuMDksMy43NiwwLC41NSwxLjY0LDMuNTYsMS42NCwzLjU2aDBaIj48L3BhdGg+PC9nPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNjAiIGZpbGw9InVybCgjdCkiPjwvcmVjdD48L3N2Zz4=") left top/80px 80px repeat;opacity:0.07;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(to right,transparent 0%,black 65%);mask-image:linear-gradient(to right,transparent 0%,black 65%);}
+  .gv-priority-banner > *{position:relative;z-index:1;}
+  .gv-priority-label{font-size:9px;font-weight:700;color:#04D3AA;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
+  .gv-priority-name{font-size:22px;font-weight:900;line-height:1.2;}
+  .gv-priority-group{font-size:12px;color:rgba(255,255,255,0.5);margin-top:5px;}
+  .gv-chain-section{margin-bottom:18px;}
+  .gv-stage-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
+  .gv-stage-hint{font-size:11px;color:#8888AA;font-style:italic;margin-bottom:8px;}
+  .gv-entries{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+  .gv-entry{background:#1c1262;border-radius:2px;padding:10px 40px 10px 12px;font-size:13px;color:#fff;line-height:1.5;border-left:2px solid;position:relative;}
+  .gv-entry.exec{border-left-color:#04D3AA;}
+  .gv-entry.biz{border-left-color:#8B5CF6;}
+  .gv-entry.ops{border-left-color:#549CFF;}
+  .gv-entry.cap{border-left-color:#04D3AA;background:#0a2a1a;}
+  .gv-entry-del{position:absolute;top:8px;right:8px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:2px;color:rgba(255,255,255,0.35);font-size:10px;padding:2px 6px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .gv-entry-del:hover{color:#FA6496;border-color:rgba(250,100,150,0.4);}
+  .gv-entry-context{font-size:11px;color:rgba(255,255,255,0.45);font-style:italic;margin-top:4px;line-height:1.4;}
+  .gv-add-row{display:flex;gap:7px;}
+  .gv-add-input{flex:1;background:#1c1262;border:1px solid rgba(100,4,218,0.4);border-radius:2px;color:#fff;font-size:13px;padding:9px 11px;outline:none;}
+  .gv-add-btn{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .gv-add-btn:not(:disabled):active{transform:translateY(1px);}
+  .gv-add-btn:disabled{opacity:0.35;cursor:default;}
+  .gv-done-bar{background:#1c1262;border-top:2px solid #04D3AA;padding:14px 18px;text-align:center;flex-shrink:0;}
+  .gv-done-text{font-size:12px;color:#8888AA;margin-bottom:10px;}
+  .gv-done-btn{background:#04D3AA;color:#120A48;border:none;border-radius:2px;padding:12px 28px;font-weight:800;font-size:14px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .gv-done-btn:active{transform:translateY(1px);}
+  .gv-complete-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(4,211,170,0.1);border:1px solid #04D3AA;border-radius:2px;padding:8px 16px;color:#04D3AA;font-weight:700;font-size:13px;margin-bottom:10px;}
+  .gv-undo-btn{background:transparent;border:none;color:#8888AA;font-size:12px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;margin-left:8px;text-decoration:underline;}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+  .modal-box{background:#1c1262;border:1px solid rgba(255,255,255,0.15);border-top:4px solid #6404DA;border-radius:2px;padding:24px;width:100%;max-width:420px;animation:fadeSlide 0.2s cubic-bezier(.2,.6,.2,1);}
+  .modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}
+  .modal-sub{font-size:13px;color:#8888AA;margin-bottom:16px;}
+  .modal-label{display:block;font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+  .modal-input{width:100%;background:#120A48;border:1px solid #6404DA;border-radius:2px;color:#fff;font-size:14px;padding:9px 12px;outline:none;margin-bottom:14px;font-family:'Inter',system-ui,sans-serif;}
+  .modal-warn{background:rgba(250,100,150,0.1);border:1px solid rgba(250,100,150,0.3);border-radius:2px;padding:12px 14px;color:#FA6496;font-size:13px;margin-bottom:20px;line-height:1.5;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+  .modal-btn-cancel{background:transparent;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.15);border-radius:2px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:color 0.12s,border-color 0.12s;}
+  .modal-btn-cancel:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .modal-btn-save{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .modal-btn-save:active{transform:translateY(1px);}
+  .modal-btn-delete{background:#FA6496;color:#fff;border:none;border-radius:2px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:transform 0.12s cubic-bezier(.2,.6,.2,1);}
+  .modal-btn-delete:active{transform:translateY(1px);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="loading">
+    <div style="font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;">BASWARE</div>
+    <div class="spinner"></div>
+    <div id="loading-msg" style="font-size:13px;color:#8888AA;">Connecting to session...</div>
+  </div>
+</div>
+
+<script>
+// ── Firebase config ───────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyAB2ZwZHBhk9GLcAeeNIs47Lwb531yP0Ug",
+  authDomain: "basware-denver-hbr-2026.firebaseapp.com",
+  databaseURL: "https://basware-denver-hbr-2026-default-rtdb.firebaseio.com",
+  projectId: "basware-denver-hbr-2026",
+  storageBucket: "basware-denver-hbr-2026.firebasestorage.app",
+  messagingSenderId: "1058060933587",
+  appId: "1:1058060933587:web:442aed2c14100a7c283726"
+};
+
+// Init Firebase (compat SDK — no modules needed)
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const STATE_REF = db.ref("value-chain");
+
+// ── Stages ────────────────────────────────────────────────────────────────
+const STAGES = [
+  { id:"exec", label:"Executive Priority",    hint:"What is the C-suite focused on achieving?",             cls:"exec" },
+  { id:"biz",  label:"Business Outcomes",     hint:"What financial or strategic results support it?",       cls:"biz"  },
+  { id:"ops",  label:"Operational Outcomes",  hint:"What operational changes drive those results?",         cls:"ops"  },
+  { id:"cap",  label:"Basware Capability",    hint:"Where does Basware enable the change?",                 cls:"cap"  }
+];
+
+const DEFAULT_PRIORITIES = [
+  "ERP Modernization",
+  "Working Capital Improvement",
+  "Acquisition Integration",
+  "Shared Services Transformation",
+  "Compliance Modernization"
+];
+
+function defaultState() {
+  return {
+    groups: DEFAULT_PRIORITIES.map(function(p,i) {
+      return { id:"g"+(i+1), name:"Group "+(i+1), priority:p, complete:false,
+               chain:{ exec:[], biz:[], ops:[], cap:[] } };
+    })
+    // No spotlight field — omit to avoid null issues with Firebase
+  };
+}
+
+function getSpotlight() { return appState.spotlight || ""; }
+
+let appState = null;
+let currentView = "loading";
+
+// Timeout if Firebase doesn't respond
+setTimeout(function() {
+  if (currentView === "loading") {
+    document.getElementById("loading-msg").innerHTML =
+      'Connection timeout. <a href="#" onclick="location.reload()" style="color:#04D3AA;">Retry</a>';
+  }
+}, 8000);
+
+function stripNulls(obj) {
+  return JSON.parse(JSON.stringify(obj, function(k,v){ return v===null ? undefined : v; }));
+}
+
+function saveState(s, cb) {
+  appState = s;
+  STATE_REF.set(stripNulls(s), function(err) {
+    if (err) { alert("Save failed: " + err.message); }
+    else if (cb) cb();
+  });
+}
+
+// ── Firebase listener ─────────────────────────────────────────────────────
+STATE_REF.on("value", function(snap) {
+  var data = snap.val();
+  if (!data) {
+    appState = defaultState();
+    STATE_REF.set(stripNulls(appState));
+  } else {
+    appState = data;
+    if (!Array.isArray(appState.groups)) appState.groups = defaultState().groups;
+    appState.groups.forEach(function(g) {
+      if (!g.chain) g.chain = {exec:[],biz:[],ops:[],cap:[]};
+      STAGES.forEach(function(s) { if (!Array.isArray(g.chain[s.id])) g.chain[s.id] = []; });
+    });
+  }
+  if (currentView === "loading") {
+    document.getElementById("loading").style.display = "none";
+    showChooser();
+  } else {
+    rerenderCurrentView();
+  }
+}, function(err) {
+  document.getElementById("loading-msg").textContent = "Firebase error: " + err.message;
+});
+
+// ── Routing ───────────────────────────────────────────────────────────────
+function showChooser()  { currentView="chooser";  renderChooser(); }
+function showFacboard() { currentView="facboard"; spotlightGroup=""; renderFacboard(); }
+function showGroupView(){ currentView="groupview"; gvSelected=""; renderGroupView(); }
+function rerenderCurrentView() {
+  if (currentView==="facboard")  renderFacboard();
+  if (currentView==="groupview") renderGroupView();
+  if (spotlightGroup) renderSpotlightOverlay();
+}
+
+// ── CHOOSER ───────────────────────────────────────────────────────────────
+function renderChooser() {
+  document.getElementById("app").innerHTML =
+  '<div id="chooser"><div class="chooser-inner">' +
+  '<div class="chooser-brand">Basware</div>' +
+  '<div class="chooser-title">The Value Chain</div>' +
+  '<div class="chooser-sub">Group Breakout Exercise</div>' +
+  '<div class="chooser-date">HBR Denver · July 13, 2026</div>' +
+  '<div class="chooser-divider"></div>' +
+  '<button id="btn-fac" class="chooser-btn btn-purple">Facilitator / Big Screen</button>' +
+  '<button id="btn-grp" class="chooser-btn btn-teal">Group Workspace</button>' +
+  '<div class="chooser-note">Facilitators manage the board and spotlight groups.<br>Groups open their workspace to build their value chain.</div>' +
+  '</div></div>';
+  document.getElementById("btn-fac").onclick = showFacboard;
+  document.getElementById("btn-grp").onclick = showGroupView;
+}
+
+// ── FACILITATOR BOARD ─────────────────────────────────────────────────────
+var spotlightGroup = "";
+var timerInterval = null;
+var timerSeconds = 12 * 60;
+var timerRunning = false;
+
+function renderFacboard() {
+  var app = document.getElementById("app");
+  var totalEntries = 0;
+  appState.groups.forEach(function(g) {
+    STAGES.forEach(function(s) { totalEntries += (g.chain[s.id]||[]).length; });
+  });
+  var completeCount = appState.groups.filter(function(g){ return g.complete; }).length;
+
+  var chainsHTML = appState.groups.map(function(g, gIdx) {
+    var isSpot = getSpotlight() === g.id;
+    var colorCls = groupColorClass(gIdx);
+    var numCls = groupNumClass(gIdx);
+    var stagesHTML = STAGES.map(function(stage) {
+      var entries = g.chain[stage.id]||[];
+      var eHTML = entries.length===0 ? '<div class="chain-empty">Nothing yet</div>' :
+        entries.map(function(e) {
+          return '<div class="chain-entry '+stage.cls+'">' +
+            '<button class="entry-del-btn" onclick="delEntry(\''+g.id+'\',\''+stage.id+'\',\''+e.id+'\')">x</button>' +
+            esc(e.text)+
+            (e.context ? '<div class="entry-context">'+esc(e.context)+'</div>' : '') +
+            '</div>';
+        }).join("");
+      return '<div class="chain-stage">' +
+        '<div class="chain-stage-label lbl-'+stage.cls+'">'+stage.label+'</div>' +
+        '<div class="chain-stage-entries">'+eHTML+'</div></div>';
+    }).join("");
+    return '<div class="chain-col '+colorCls+(isSpot?' spotlit':'')+'">' +
+      '<div class="chain-col-header">' +
+        '<div class="chain-col-num '+numCls+'">'+esc(g.name)+'</div>' +
+        '<div class="chain-col-priority">'+esc(g.priority)+'</div>' +
+        (g.complete?'<div style="font-size:9px;color:#04D3AA;font-weight:700;margin-top:4px;letter-spacing:1px;">COMPLETE</div>':'') +
+        '<div class="chain-col-actions">' +
+          '<button class="chain-col-btn'+(isSpot?' spot-active':'')+'" onclick="toggleSpotlight(\''+g.id+'\')">'+((isSpot)?'Remove':'Spotlight')+'</button>' +
+          '<button class="chain-col-btn" onclick="editGroup(\''+g.id+'\')">Edit</button>' +
+          '<button class="chain-col-btn del-btn" onclick="deleteGroup(\''+g.id+'\')">Delete</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="chain-col-body">'+stagesHTML+'</div></div>';
+  }).join("");
+
+  var mm = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+  var ss = String(timerSeconds%60).padStart(2,'0');
+
+  var groupRowsHTML = appState.groups.map(function(g) {
+    return '<div class="group-row">' +
+      '<div><div class="group-row-name">'+esc(g.name)+'</div>' +
+      '<div class="group-row-priority">'+esc(g.priority)+'</div></div>' +
+      (g.complete?'<div style="font-size:9px;color:#04D3AA;font-weight:700;">DONE</div>':'') +
+      '</div>';
+  }).join("");
+
+  app.innerHTML =
+  '<div id="facboard">' +
+  '<div class="topbar">' +
+    '<div><div class="topbar-title">The Value Chain: Group Breakout</div>' +
+    '<div class="topbar-sub">FACILITATOR BOARD · DENVER HBR · JULY 13, 2026</div></div>' +
+    '<div class="topbar-right">' +
+      '<button class="btn-sm btn-sm-purple" onclick="showAddGroupModal()">+ Add Group</button>' +
+      '<button class="btn-sm btn-sm-ghost" onclick="showResetModal()">Reset All</button>' +
+      '<button class="btn-sm btn-sm-ghost" onclick="showChooser()">← Roles</button>' +
+      '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
+    '</div></div>' +
+  '<div class="facboard-body">' +
+    '<div class="facboard-main"><div class="chains-wrap">'+chainsHTML+'</div></div>' +
+    '<div class="fac-right">' +
+      '<div><div class="panel-section-label">Timer</div>' +
+      '<div class="timer-box">' +
+        '<div class="timer-display" id="timer-display" style="color:'+(timerSeconds<=60?'#FA6496':'#04D3AA')+'">'+mm+':'+ss+'</div>' +
+        '<div class="timer-sublabel">minutes remaining</div>' +
+        '<div class="timer-controls">' +
+          '<button class="timer-btn" id="btn-timer-toggle" onclick="toggleTimer()">'+(timerRunning?'Pause':'Start')+'</button>' +
+          '<button class="timer-btn" onclick="resetTimer()">Reset</button>' +
+        '</div>' +
+        '<div class="timer-set-row">' +
+          '<input id="timer-set-min" class="timer-set-input" type="number" min="1" max="99" value="'+String(Math.floor(timerSeconds/60))+'" title="Minutes"/>' +
+          '<span class="timer-set-label">min</span>' +
+          '<button class="timer-set-btn" onclick="setTimer()">Set</button>' +
+        '</div></div></div>' +
+      '<div><div class="panel-section-label">Progress</div>' +
+        '<div class="stat-box"><div class="stat-label">Groups Complete</div><div class="stat-value" style="color:#04D3AA">'+completeCount+'/'+appState.groups.length+'</div></div>' +
+        '<div class="stat-box"><div class="stat-label">Total Entries</div><div class="stat-value">'+totalEntries+'</div></div></div>' +
+      '<div><div class="panel-section-label">Groups</div>'+groupRowsHTML+'</div>' +
+    '</div></div>' +
+  '<div class="stats-bar">' +
+    '<div class="stats-bar-item"><strong>'+appState.groups.length+'</strong> groups</div>' +
+    '<div class="stats-bar-item"><strong>'+completeCount+'</strong> complete</div>' +
+    '<div class="stats-bar-item"><strong>'+totalEntries+'</strong> entries</div>' +
+    '<div style="margin-left:auto;font-size:11px;color:#333366;">Groups: open this page and tap "Group Workspace"</div>' +
+  '</div></div>';
+
+  if (spotlightGroup) renderSpotlightOverlay();
+}
+
+function updateTimerDisplay() {
+  var el = document.getElementById("timer-display");
+  if (!el) return;
+  var mm = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+  var ss = String(timerSeconds%60).padStart(2,'0');
+  el.textContent = mm+':'+ss;
+  el.style.color = timerSeconds<=60 ? '#FA6496' : '#04D3AA';
+}
+
+function toggleTimer() {
+  timerRunning = !timerRunning;
+  if (timerRunning) {
+    document.getElementById("btn-timer-toggle").textContent = "Pause";
+    timerInterval = setInterval(function() {
+      if (timerSeconds > 0) { timerSeconds--; updateTimerDisplay(); }
+      else { timerRunning=false; clearInterval(timerInterval); renderFacboard(); }
+    }, 1000);
+  } else {
+    clearInterval(timerInterval);
+    document.getElementById("btn-timer-toggle").textContent = "Start";
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerInterval); timerRunning=false; timerSeconds=12*60; renderFacboard();
+}
+
+function setTimer() {
+  var input = document.getElementById("timer-set-min");
+  var mins = parseInt(input ? input.value : 12, 10);
+  if (isNaN(mins) || mins < 1) mins = 1;
+  if (mins > 99) mins = 99;
+  clearInterval(timerInterval); timerRunning=false; timerSeconds=mins*60; renderFacboard();
+}
+
+function toggleSpotlight(gid) {
+  var newSpot = getSpotlight()===gid ? "" : gid;
+  spotlightGroup = newSpot;
+  saveState(Object.assign({}, appState, {spotlight: newSpot || undefined}));
+  if (newSpot) renderSpotlightOverlay();
+  else { var ov=document.getElementById("spotlight-overlay"); if(ov) ov.remove(); renderFacboard(); }
+}
+
+function delEntry(gid, stageId, eid) {
+  var groups = appState.groups.map(function(g) {
+    if (g.id!==gid) return g;
+    var chain = Object.assign({}, g.chain);
+    chain[stageId] = (chain[stageId]||[]).filter(function(e){ return e.id!==eid; });
+    return Object.assign({}, g, {chain:chain});
+  });
+  saveState(Object.assign({}, appState, {groups:groups}));
+}
+
+function editGroup(gid) {
+  var g = appState.groups.find(function(x){ return x.id===gid; });
+  if (g) showEditGroupModal(g);
+}
+
+function deleteGroup(gid) {
+  var g = appState.groups.find(function(x){ return x.id===gid; });
+  if (g) showDeleteGroupModal(g);
+}
+
+// ── SPOTLIGHT OVERLAY ─────────────────────────────────────────────────────
+function renderSpotlightOverlay() {
+  var existing = document.getElementById("spotlight-overlay");
+  if (existing) existing.remove();
+  if (!spotlightGroup) return;
+  var gIdx = appState.groups.findIndex(function(x){ return x.id===spotlightGroup; });
+  var g = gIdx >= 0 ? appState.groups[gIdx] : null;
+  if (!g) { spotlightGroup=""; return; }
+  var colorName = GROUP_COLORS[gIdx % GROUP_COLORS.length];
+  var colorHex = {green:"#22c55e",purple:"#8B5CF6",blue:"#549CFF",red:"#FA6496",gray:"#8888AA"}[colorName];
+
+  var colsHTML = STAGES.map(function(stage) {
+    var entries = g.chain[stage.id]||[];
+    var eHTML = entries.length===0 ? '<div class="spot-empty">Nothing added yet</div>' :
+      entries.map(function(e){
+        return '<div class="spot-entry '+stage.cls+'">'+esc(e.text)+
+          (e.context?'<div class="spot-entry-context">'+esc(e.context)+'</div>':'')+
+          '</div>';
+      }).join("");
+    return '<div><div class="spot-col-label '+stage.cls+'">'+stage.label+'</div>'+eHTML+'</div>';
+  }).join("");
+
+  var ov = document.createElement("div");
+  ov.className="spotlight-overlay"; ov.id="spotlight-overlay";
+  ov.innerHTML =
+    '<div class="spot-topbar" style="border-bottom-color:'+colorHex+';">' +
+      '<div><div class="spot-eyebrow" style="color:'+colorHex+';">Value Chain Spotlight</div>' +
+      '<div class="spot-priority">'+esc(g.priority)+'</div>' +
+      '<div class="spot-group">'+esc(g.name)+(g.complete?' · Complete':'')+'</div></div>' +
+      '<button class="spot-close" id="btn-spot-close">Close Spotlight</button>' +
+    '</div>' +
+    '<div class="spot-body">'+colsHTML+'</div>';
+  document.body.appendChild(ov);
+  document.getElementById("btn-spot-close").onclick = function() {
+    spotlightGroup="";
+    ov.remove();
+    saveState(Object.assign({}, appState, {spotlight: undefined}));
+    renderFacboard();
+  };
+}
+
+// ── GROUP VIEW ────────────────────────────────────────────────────────────
+var gvSelected = "";
+
+function renderGroupView() {
+  var app = document.getElementById("app");
+  if (!gvSelected) {
+    var groupsHTML = appState.groups.map(function(g) {
+      return '<button class="gv-group-btn" onclick="selectGroup(\''+g.id+'\')">' +
+        esc(g.name)+'<div class="gv-group-priority">'+esc(g.priority)+'</div></button>';
+    }).join("");
+    app.innerHTML =
+      '<div id="groupview"><div class="topbar">' +
+        '<div><div class="topbar-title">The Value Chain: Group Breakout</div>' +
+        '<div class="topbar-sub">DENVER HBR · JULY 13, 2026</div></div>' +
+        '<div class="topbar-right">' +
+          '<button class="btn-sm btn-sm-ghost" onclick="showChooser()">← Roles</button>' +
+          '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
+        '</div></div>' +
+        '<div class="gv-body"><div class="gv-pick-label">Select your group</div>'+groupsHTML+'</div></div>';
+    return;
+  }
+
+  var g = appState.groups.find(function(x){ return x.id===gvSelected; });
+  if (!g) { gvSelected=""; renderGroupView(); return; }
+
+  var colorMap = {exec:"#04D3AA",biz:"#8B5CF6",ops:"#549CFF",cap:"#04D3AA"};
+  var stagesHTML = STAGES.map(function(stage) {
+    var entries = g.chain[stage.id]||[];
+    var eHTML = entries.map(function(e) {
+      return '<div class="gv-entry '+stage.cls+'">' + esc(e.text) +
+        (e.context ? '<div class="gv-entry-context">'+esc(e.context)+'</div>' : '') +
+        '<button class="gv-entry-del" onclick="gvDelEntry(\''+stage.id+'\',\''+e.id+'\')">x</button></div>';
+    }).join("");
+    return '<div class="gv-chain-section">' +
+      '<div class="gv-stage-label" style="color:'+colorMap[stage.cls]+'">'+stage.label+'</div>' +
+      '<div class="gv-stage-hint">'+stage.hint+'</div>' +
+      '<div class="gv-entries" id="gv-entries-'+stage.id+'">'+eHTML+'</div>' +
+      '<div class="gv-add-row">' +
+        '<input id="gv-input-'+stage.id+'" class="gv-add-input" placeholder="Entry..." oninput="gvInputChange(\''+stage.id+'\')" onkeydown="gvInputKey(event,\''+stage.id+'\')"/>' +
+        '<button id="gv-btn-'+stage.id+'" class="gv-add-btn" disabled onclick="gvAdd(\''+stage.id+'\')">Add</button>' +
+      '</div>' +
+      '<input id="gv-ctx-'+stage.id+'" class="gv-add-input" style="margin-top:5px;font-size:12px;border-color:rgba(100,4,218,0.25);" placeholder="Context (optional): add a sentence explaining this entry..."/>' +
+      '</div>';
+  }).join("");
+
+  var doneBar = g.complete
+    ? '<div class="gv-done-bar">' +
+        '<div class="gv-complete-badge">Chain Marked Complete' +
+          '<button class="gv-undo-btn" onclick="gvUndoComplete()">Undo</button></div>' +
+        '<div class="gv-done-text">Your chain is visible on the facilitator screen.</div></div>'
+    : '<div class="gv-done-bar">' +
+        '<div class="gv-done-text">When your chain is ready, mark it complete for the facilitator.</div>' +
+        '<button class="gv-done-btn" onclick="gvMarkComplete()">Mark Chain Complete</button></div>';
+
+  app.innerHTML =
+    '<div id="groupview" style="display:flex;flex-direction:column;min-height:100vh;">' +
+    '<div class="topbar">' +
+      '<div><div class="topbar-title">The Value Chain: Group Breakout</div>' +
+      '<div class="topbar-sub">DENVER HBR · JULY 13, 2026</div></div>' +
+      '<div class="topbar-right">' +
+        '<button class="btn-sm btn-sm-ghost" onclick="gvSelected=\'\';renderGroupView()">← Groups</button>' +
+        '<button class="btn-sm btn-sm-ghost" onclick="showChooser()">← Roles</button>' +
+        '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
+      '</div></div>' +
+    '<div class="gv-body" style="padding-bottom:0;">' +
+      '<div class="gv-priority-banner">' +
+        '<div class="gv-priority-label">Your Executive Priority</div>' +
+        '<div class="gv-priority-name">'+esc(g.priority)+'</div>' +
+        '<div class="gv-priority-group">'+esc(g.name)+' · Work top-down to complete your chain</div>' +
+      '</div>'+stagesHTML+'</div>' +
+    doneBar+'</div>';
+}
+
+function selectGroup(gid) { gvSelected=gid; renderGroupView(); }
+
+function gvInputChange(stageId) {
+  var input = document.getElementById("gv-input-"+stageId);
+  var btn = document.getElementById("gv-btn-"+stageId);
+  if (btn) btn.disabled = !input.value.trim();
+}
+
+function gvInputKey(e, stageId) { if (e.key==="Enter") gvAdd(stageId); }
+
+function gvAdd(stageId) {
+  var input = document.getElementById("gv-input-"+stageId);
+  var ctxInput = document.getElementById("gv-ctx-"+stageId);
+  var txt = input ? input.value.trim() : "";
+  var ctx = ctxInput ? ctxInput.value.trim() : "";
+  if (!txt || !gvSelected) return;
+  var entry = { id: Date.now()+""+Math.floor(Math.random()*9999), text: txt };
+  if (ctx) entry.context = ctx;
+  var groups = appState.groups.map(function(gr) {
+    if (gr.id!==gvSelected) return gr;
+    var chain = Object.assign({}, gr.chain);
+    chain[stageId] = (chain[stageId]||[]).concat([entry]);
+    return Object.assign({}, gr, {chain:chain});
+  });
+  if (input) { input.value=""; var btn=document.getElementById("gv-btn-"+stageId); if(btn) btn.disabled=true; }
+  if (ctxInput) ctxInput.value="";
+  saveState(Object.assign({}, appState, {groups:groups}));
+}
+
+function gvDelEntry(stageId, eid) {
+  if (!gvSelected) return;
+  var groups = appState.groups.map(function(gr) {
+    if (gr.id!==gvSelected) return gr;
+    var chain = Object.assign({}, gr.chain);
+    chain[stageId] = (chain[stageId]||[]).filter(function(e){ return e.id!==eid; });
+    return Object.assign({}, gr, {chain:chain});
+  });
+  saveState(Object.assign({}, appState, {groups:groups}));
+}
+
+function gvMarkComplete() {
+  var groups = appState.groups.map(function(gr){ return gr.id===gvSelected ? Object.assign({},gr,{complete:true}) : gr; });
+  saveState(Object.assign({}, appState, {groups:groups}));
+}
+
+function gvUndoComplete() {
+  var groups = appState.groups.map(function(gr){ return gr.id===gvSelected ? Object.assign({},gr,{complete:false}) : gr; });
+  saveState(Object.assign({}, appState, {groups:groups}));
+}
+
+// ── MODALS ────────────────────────────────────────────────────────────────
+function showAddGroupModal() {
+  var ov = document.createElement("div"); ov.className="modal-overlay";
+  ov.innerHTML='<div class="modal-box"><div class="modal-title">Add Group</div>' +
+    '<div class="modal-sub">Assign a name and executive priority</div>' +
+    '<label class="modal-label">Group Name</label><input id="m-gname" class="modal-input" placeholder="e.g. Group 6"/>' +
+    '<label class="modal-label">Executive Priority</label><input id="m-gpriority" class="modal-input" placeholder="e.g. Digital Transformation"/>' +
+    '<div class="modal-actions"><button class="modal-btn-cancel" id="m-cancel">Cancel</button><button class="modal-btn-save" id="m-save">Add Group</button></div></div>';
+  document.body.appendChild(ov);
+  document.getElementById("m-cancel").onclick=function(){ ov.remove(); };
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  document.getElementById("m-save").onclick=function(){
+    var name=document.getElementById("m-gname").value.trim();
+    var priority=document.getElementById("m-gpriority").value.trim();
+    if(!name||!priority) return;
+    var newG={id:"g"+Date.now(),name:name,priority:priority,complete:false,chain:{exec:[],biz:[],ops:[],cap:[]}};
+    var groups=appState.groups.concat([newG]);
+    ov.remove();
+    saveState(Object.assign({},appState,{groups:groups}));
+  };
+}
+
+function showEditGroupModal(g) {
+  var ov = document.createElement("div"); ov.className="modal-overlay";
+  ov.innerHTML='<div class="modal-box"><div class="modal-title">Edit Group</div>' +
+    '<label class="modal-label">Group Name</label><input id="m-gname" class="modal-input" value="'+esc(g.name)+'"/>' +
+    '<label class="modal-label">Executive Priority</label><input id="m-gpriority" class="modal-input" value="'+esc(g.priority)+'"/>' +
+    '<div class="modal-actions"><button class="modal-btn-cancel" id="m-cancel">Cancel</button><button class="modal-btn-save" id="m-save">Save</button></div></div>';
+  document.body.appendChild(ov);
+  document.getElementById("m-cancel").onclick=function(){ ov.remove(); };
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  document.getElementById("m-save").onclick=function(){
+    var name=document.getElementById("m-gname").value.trim()||g.name;
+    var priority=document.getElementById("m-gpriority").value.trim()||g.priority;
+    var groups=appState.groups.map(function(gr){ return gr.id===g.id ? Object.assign({},gr,{name:name,priority:priority}) : gr; });
+    ov.remove();
+    saveState(Object.assign({},appState,{groups:groups}));
+  };
+}
+
+function showDeleteGroupModal(g) {
+  var ov = document.createElement("div"); ov.className="modal-overlay";
+  ov.innerHTML='<div class="modal-box"><div class="modal-title">Delete Group</div>' +
+    '<div class="modal-warn">Delete <strong>'+esc(g.name)+'</strong> and all their chain entries? This cannot be undone.</div>' +
+    '<div class="modal-actions"><button class="modal-btn-cancel" id="m-cancel">Cancel</button><button class="modal-btn-delete" id="m-confirm">Yes, Delete</button></div></div>';
+  document.body.appendChild(ov);
+  document.getElementById("m-cancel").onclick=function(){ ov.remove(); };
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  document.getElementById("m-confirm").onclick=function(){
+    var groups=appState.groups.filter(function(gr){ return gr.id!==g.id; });
+    var newSpot=getSpotlight()===g.id ? undefined : (getSpotlight()||undefined);
+    ov.remove();
+    saveState(Object.assign({},appState,{groups:groups,spotlight:newSpot}));
+  };
+}
+
+function showResetModal() {
+  var ov = document.createElement("div"); ov.className="modal-overlay";
+  ov.innerHTML='<div class="modal-box"><div class="modal-title">Reset All Groups</div>' +
+    '<div class="modal-warn">This clears all chain entries and resets completion status. Cannot be undone.</div>' +
+    '<div class="modal-actions"><button class="modal-btn-cancel" id="m-cancel">Cancel</button><button class="modal-btn-delete" id="m-confirm">Yes, Reset</button></div></div>';
+  document.body.appendChild(ov);
+  document.getElementById("m-cancel").onclick=function(){ ov.remove(); };
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  document.getElementById("m-confirm").onclick=function(){
+    var groups=appState.groups.map(function(g){ return Object.assign({},g,{complete:false,chain:{exec:[],biz:[],ops:[],cap:[]}}); });
+    ov.remove();
+    saveState(Object.assign({},appState,{groups:groups,spotlight:undefined}));
+  };
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Map group index to color class (cycles if more than 5 groups)
+var GROUP_COLORS = ["green","purple","blue","red","gray"];
+function groupColorClass(idx){ return "group-color-"+(GROUP_COLORS[idx % GROUP_COLORS.length]); }
+function groupNumClass(idx){ return "gc-"+(GROUP_COLORS[idx % GROUP_COLORS.length]); }
+</script>
+</body>
+</html>
