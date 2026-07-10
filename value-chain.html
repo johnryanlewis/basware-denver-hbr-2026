@@ -335,6 +335,7 @@ var spotlightGroup = "";
 var timerInterval = null;
 var timerSeconds = 12 * 60;
 var timerRunning = false;
+var sidebarVisible = true;
 
 function renderFacboard() {
   var app = document.getElementById("app");
@@ -395,30 +396,34 @@ function renderFacboard() {
     '<div class="topbar-right">' +
       '<button class="btn-sm btn-sm-purple" onclick="showAddGroupModal()">+ Add Group</button>' +
       '<button class="btn-sm btn-sm-ghost" onclick="showResetModal()">Reset All</button>' +
+      '<button class="btn-sm btn-sm-ghost" onclick="toggleSidebar()">'+(sidebarVisible?'Hide Panel':'Show Panel')+'</button>' +
       '<button class="btn-sm btn-sm-ghost" onclick="showChooser()">← Roles</button>' +
       '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
     '</div></div>' +
   '<div class="facboard-body">' +
     '<div class="facboard-main"><div class="chains-wrap">'+chainsHTML+'</div></div>' +
-    '<div class="fac-right">' +
-      '<div><div class="panel-section-label">Timer</div>' +
-      '<div class="timer-box">' +
-        '<div class="timer-display" id="timer-display" style="color:'+(timerSeconds<=60?'#FA6496':'#04D3AA')+'">'+mm+':'+ss+'</div>' +
-        '<div class="timer-sublabel">minutes remaining</div>' +
-        '<div class="timer-controls">' +
-          '<button class="timer-btn" id="btn-timer-toggle" onclick="toggleTimer()">'+(timerRunning?'Pause':'Start')+'</button>' +
-          '<button class="timer-btn" onclick="resetTimer()">Reset</button>' +
-        '</div>' +
-        '<div class="timer-set-row">' +
-          '<input id="timer-set-min" class="timer-set-input" type="number" min="1" max="99" value="'+String(Math.floor(timerSeconds/60))+'" title="Minutes"/>' +
-          '<span class="timer-set-label">min</span>' +
-          '<button class="timer-set-btn" onclick="setTimer()">Set</button>' +
-        '</div></div></div>' +
-      '<div><div class="panel-section-label">Progress</div>' +
-        '<div class="stat-box"><div class="stat-label">Groups Complete</div><div class="stat-value" style="color:#04D3AA">'+completeCount+'/'+appState.groups.length+'</div></div>' +
-        '<div class="stat-box"><div class="stat-label">Total Entries</div><div class="stat-value">'+totalEntries+'</div></div></div>' +
-      '<div><div class="panel-section-label">Groups</div>'+groupRowsHTML+'</div>' +
-    '</div></div>' +
+    (sidebarVisible ?
+      '<div class="fac-right">' +
+        '<div><div class="panel-section-label">Timer</div>' +
+        '<div class="timer-box">' +
+          '<div class="timer-display" id="timer-display" style="color:'+(timerSeconds<=60?'#FA6496':'#04D3AA')+'">'+mm+':'+ss+'</div>' +
+          '<div class="timer-sublabel">minutes remaining</div>' +
+          '<div class="timer-controls">' +
+            '<button class="timer-btn" id="btn-timer-toggle" onclick="toggleTimer()">'+(timerRunning?'Pause':'Start')+'</button>' +
+            '<button class="timer-btn" onclick="resetTimer()">Reset</button>' +
+          '</div>' +
+          '<div class="timer-set-row">' +
+            '<input id="timer-set-min" class="timer-set-input" type="number" min="1" max="99" value="'+String(Math.floor(timerSeconds/60))+'" title="Minutes"/>' +
+            '<span class="timer-set-label">min</span>' +
+            '<button class="timer-set-btn" onclick="setTimer()">Set</button>' +
+          '</div></div></div>' +
+        '<div><div class="panel-section-label">Progress</div>' +
+          '<div class="stat-box"><div class="stat-label">Groups Complete</div><div class="stat-value" style="color:#04D3AA">'+completeCount+'/'+appState.groups.length+'</div></div>' +
+          '<div class="stat-box"><div class="stat-label">Total Entries</div><div class="stat-value">'+totalEntries+'</div></div></div>' +
+        '<div><div class="panel-section-label">Groups</div>'+groupRowsHTML+'</div>' +
+      '</div>'
+    : '') +
+  '</div>' +
   '<div class="stats-bar">' +
     '<div class="stats-bar-item"><strong>'+appState.groups.length+'</strong> groups</div>' +
     '<div class="stats-bar-item"><strong>'+completeCount+'</strong> complete</div>' +
@@ -462,6 +467,11 @@ function setTimer() {
   if (isNaN(mins) || mins < 1) mins = 1;
   if (mins > 99) mins = 99;
   clearInterval(timerInterval); timerRunning=false; timerSeconds=mins*60; renderFacboard();
+}
+
+function toggleSidebar() {
+  sidebarVisible = !sidebarVisible;
+  renderFacboard();
 }
 
 function toggleSpotlight(gid) {
