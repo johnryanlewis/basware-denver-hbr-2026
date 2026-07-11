@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Group Shuffler — HBR Denver</title>
+<link rel="stylesheet" href="_ds/basware-brand-7e62478d-2a59-42a0-9052-8e7b9c1c1f62/colors_and_type.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;}
+  input,textarea,select{font-family:inherit;}
+  input::placeholder,textarea::placeholder{color:rgba(255,255,255,0.25);}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#6404DA;border-radius:2px;}
+
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes nameShuffle{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  @keyframes cardReveal{from{opacity:0;transform:scale(0.88) translateY(18px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+  /* ── Session Picker ── */
+  #picker{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden;}
+  .picker-inner{text-align:center;max-width:480px;width:100%;position:relative;z-index:1;}
+  .picker-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+  .picker-title{font-size:36px;font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:6px;}
+  .picker-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:32px;letter-spacing:1px;}
+  .picker-tick{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:480px;height:480px;opacity:0.04;pointer-events:none;}
+  .session-card{width:100%;background:#1c1262;border:1px solid rgba(100,4,218,0.4);border-radius:2px;padding:18px 20px;margin-bottom:12px;cursor:pointer;text-align:left;transition:border-color 0.15s,background 0.15s;display:block;}
+  .session-card:hover{border-color:#6404DA;background:#1e1470;}
+  .session-card-name{font-size:16px;font-weight:800;color:#fff;}
+  .session-card-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px;}
+
+  /* ── Shared topbar ── */
+  .topbar{background:#1c1262;border-bottom:2px solid #6404DA;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .topbar-title{font-size:16px;font-weight:900;}
+  .topbar-sub{font-size:10px;color:#04D3AA;font-weight:700;letter-spacing:1.5px;margin-top:2px;}
+  .topbar-right{display:flex;gap:8px;align-items:center;}
+  .btn-sm{border:none;border-radius:2px;padding:6px 12px;font-weight:700;font-size:11px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;white-space:nowrap;}
+  .btn-ghost{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);}
+  .btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .brand-tag .name{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:2px;}
+  .brand-tag .tagline{font-size:9px;color:rgba(255,255,255,0.4);}
+
+  /* ── Setup screen ── */
+  #setupscreen{display:flex;flex-direction:column;min-height:100vh;}
+  .setup-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px;}
+  .setup-inner{max-width:560px;width:100%;}
+  .setup-title{font-size:22px;font-weight:800;margin-bottom:6px;}
+  .setup-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:24px;}
+  .field-label{font-size:10px;font-weight:700;color:#04D3AA;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .groups-row{display:flex;gap:8px;align-items:center;margin-bottom:24px;}
+  .groups-input{width:80px;background:#1c1262;border:1px solid rgba(100,4,218,0.4);border-radius:2px;color:#fff;font-size:18px;font-weight:700;padding:8px 12px;outline:none;text-align:center;}
+  .groups-label{font-size:13px;color:rgba(255,255,255,0.45);}
+  .participant-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;min-height:36px;}
+  .p-tag{background:#1c1262;border:1px solid rgba(100,4,218,0.35);border-radius:2px;padding:5px 10px;font-size:12px;color:#fff;display:flex;align-items:center;gap:6px;}
+  .p-tag-remove{background:none;border:none;color:rgba(255,255,255,0.45);font-size:14px;cursor:pointer;padding:0;line-height:1;}
+  .p-tag-remove:hover{color:#FA6496;}
+  .add-row{display:flex;gap:8px;margin-bottom:20px;}
+  .add-input{flex:1;background:#1c1262;border:1px solid rgba(100,4,218,0.4);border-radius:2px;color:#fff;font-size:13px;padding:9px 11px;outline:none;}
+  .add-btn{background:#6404DA;color:#fff;border:none;border-radius:2px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;}
+  .shuffle-btn{width:100%;background:#04D3AA;color:#120A48;border:none;border-radius:2px;padding:15px;font-weight:900;font-size:16px;cursor:pointer;letter-spacing:0.3px;}
+  .shuffle-btn:disabled{opacity:0.35;cursor:default;}
+
+  /* ── Shuffle animation ── */
+  #shuffle-anim{position:fixed;inset:0;background:#120A48;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;}
+  .anim-title{font-size:13px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;animation:pulse 0.8s infinite;}
+  .anim-names{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:640px;}
+  .anim-name{font-size:13px;font-weight:600;color:rgba(255,255,255,0.55);padding:5px 12px;background:#1c1262;border-radius:2px;border:1px solid rgba(100,4,218,0.3);}
+  .anim-name.active{animation:nameShuffle 0.18s infinite;}
+  .anim-progress{width:220px;height:2px;background:#2D2D6B;border-radius:1px;overflow:hidden;margin-top:8px;}
+  .anim-bar{height:100%;background:#04D3AA;transition:width 0.08s linear;}
+
+  /* ── Results ── */
+  #resultsscreen{display:flex;flex-direction:column;min-height:100vh;}
+  .results-body{flex:1;padding:20px;overflow-y:auto;}
+  .results-header{text-align:center;margin-bottom:24px;}
+  .results-title{font-size:22px;font-weight:800;margin-bottom:4px;}
+  .results-sub{font-size:12px;color:rgba(255,255,255,0.45);}
+  .groups-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+
+  .group-card{background:#1c1262;border-radius:2px;border:1px solid rgba(100,4,218,0.35);overflow:hidden;animation:cardReveal 0.4s cubic-bezier(.2,.6,.2,1) both;}
+  .group-card-header{padding:12px 14px;border-bottom:1px solid rgba(100,4,218,0.2);}
+  .group-card-num{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+  .group-card-name{font-size:15px;font-weight:800;color:#fff;}
+  .group-card-body{padding:10px 14px;display:flex;flex-direction:column;gap:6px;}
+  .member-row{display:flex;justify-content:space-between;align-items:center;background:#120A48;border-radius:2px;padding:7px 10px;}
+  .member-name{font-size:13px;color:#fff;font-weight:500;}
+  .member-move-btn{background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:2px;color:rgba(255,255,255,0.4);font-size:10px;padding:2px 7px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .member-move-btn:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
+  .group-card-count{font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px;padding:0 2px;}
+
+  /* Group color accents */
+  .gc0 .group-card-header{border-top:3px solid #04D3AA;} .gc0 .group-card-num{color:#04D3AA;}
+  .gc1 .group-card-header{border-top:3px solid #6404DA;} .gc1 .group-card-num{color:#6404DA;}
+  .gc2 .group-card-header{border-top:3px solid #549CFF;} .gc2 .group-card-num{color:#549CFF;}
+  .gc3 .group-card-header{border-top:3px solid #FA6496;} .gc3 .group-card-num{color:#FA6496;}
+  .gc4 .group-card-header{border-top:3px solid #8E97B3;} .gc4 .group-card-num{color:#8E97B3;}
+  .gc5 .group-card-header{border-top:3px solid #04D3AA;} .gc5 .group-card-num{color:#04D3AA;}
+
+  /* ── Move modal ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+  .modal-box{background:#1c1262;border:1px solid #6404DA;border-radius:2px;padding:24px;width:100%;max-width:380px;animation:fadeSlide 0.2s ease;}
+  .modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}
+  .modal-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:18px;}
+  .modal-group-btn{width:100%;background:#120A48;border:1px solid rgba(100,4,218,0.3);border-radius:2px;color:#fff;font-size:14px;font-weight:600;padding:11px 14px;cursor:pointer;text-align:left;margin-bottom:8px;font-family:'Inter',system-ui,sans-serif;transition:border-color 0.15s;}
+  .modal-group-btn:hover{border-color:#6404DA;}
+  .modal-cancel-btn{width:100%;background:transparent;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.15);border-radius:2px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',system-ui,sans-serif;margin-top:4px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ── Predetermined groups ──────────────────────────────────────────────────
+const SESSIONS = {
+  workshop: {
+    name: "Workshopping the Workshop",
+    sub: "Acquisition · 5 groups · 15 participants",
+    groups: [
+      { name:"Qualification",          members:["Paul Koscielski","Taylor Hess","Jason Palangio"] },
+      { name:"Team Alignment",         members:["Sara Abbadi","Ramsha Mardini","Charlie Rafferty","Dean Burkus"] },
+      { name:"Assets",                 members:["Justin Wade","Danette Carlucci","Mike Segoviano"] },
+      { name:"The Day Itself",         members:["Dale Magoon","Nick Kidd","Jacob Wright"] },
+      { name:"Takeaways & Next Steps", members:["Peter Kosovec","Kyle Flaherty","Michael Creeden"] }
+    ]
+  },
+  value: {
+    name: "The Value Equation",
+    sub: "Executive Priority Breakout · 5 groups · 27 participants",
+    groups: [
+      { name:"ERP Modernization",              members:["Jason Palangio","Kyle Flaherty","Charlie Rafferty","Mike Segoviano","Jacob Wright","Scott Craven"] },
+      { name:"Working Capital Improvement",    members:["Sara Abbadi","Joe Hager","Nick Kidd","Luke Porter","Michael Creeden"] },
+      { name:"Acquisition Integration",        members:["Dean Burkus","Taylor Hess","Paul Koscielski","Maggie Smeltzer","Summer Vogel"] },
+      { name:"Shared Services Transformation", members:["Justin Wade","Dale Magoon","Mara Miller","Courtney Talcott","Malia Ott","Peter Kosovec"] },
+      { name:"Compliance Modernization",       members:["Ramsha Mardini","Danette Carlucci","Jay Wick","Martin Decker","Darren Newahine","Kristen Peterka"] }
+    ]
+  },
+  other: { name: "Other Breakouts", sub: "Random group generator · custom participants", random: true }
+};
+
+const DEFAULT_PARTICIPANTS = [
+  "Sara Abbadi","Dean Burkus","Danette Carlucci","Dan Duggan",
+  "Kyle Flaherty","Joe Hager","Taylor Hess","Nick Kidd",
+  "Paul Koscielski","Dale Magoon","Ramsha Mardini","Mara Miller",
+  "Jason Palangio","Charlie Rafferty","Mike Segoviano","Maggie Smeltzer",
+  "Courtney Talcott","Justin Wade","Jay Wick",
+  "Jacob Wright","Peter Kosovec","Michael Creeden","Scott Craven",
+  "Luke Porter","Summer Vogel","Malia Ott","Martin Decker",
+  "Darren Newahine","Kristen Peterka"
+];
+
+// ── App state ─────────────────────────────────────────────────────────────
+var screen = "picker";
+var currentSession = null;
+var participants = DEFAULT_PARTICIPANTS.slice();
+var numGroups = 4;
+var revealedGroups = [];
+var newParticipantVal = "";
+
+// ── Router ────────────────────────────────────────────────────────────────
+function render() {
+  if (screen === "picker")  renderPicker();
+  if (screen === "setup")   renderSetup();
+  if (screen === "results") renderResults();
+}
+
+// ── PICKER ────────────────────────────────────────────────────────────────
+function renderPicker() {
+  var app = document.getElementById("app");
+  var cardsHTML = Object.keys(SESSIONS).map(function(key) {
+    var s = SESSIONS[key];
+    return '<div class="session-card" onclick="selectSession(\''+key+'\')">' +
+      '<div class="session-card-name">'+esc(s.name)+'</div>' +
+      '<div class="session-card-sub">'+esc(s.sub)+'</div>' +
+      '</div>';
+  }).join("");
+
+  app.innerHTML =
+    '<div id="picker">' +
+      '<img class="picker-tick" src="assets/tick-mint.svg" alt=""/>' +
+      '<div class="picker-inner">' +
+        '<div class="picker-brand">Basware</div>' +
+        '<div class="picker-title">Group Shuffler</div>' +
+        '<div class="picker-sub">HBR Denver · Mile High Focus · July 2026</div>' +
+        cardsHTML +
+      '</div>' +
+    '</div>';
+}
+
+function selectSession(key) {
+  currentSession = key;
+  var s = SESSIONS[key];
+  if (s.random) {
+    screen = "setup";
+    render();
+  } else {
+    revealedGroups = s.groups.map(function(g) {
+      return { name: g.name, members: g.members.slice() };
+    });
+    runShuffleAnimation(revealedGroups);
+  }
+}
+
+// ── SETUP ─────────────────────────────────────────────────────────────────
+function renderSetup() {
+  var tagsHTML = participants.map(function(p, i) {
+    return '<div class="p-tag">'+esc(p)+
+      '<button class="p-tag-remove" onclick="removeParticipant('+i+')">×</button></div>';
+  }).join("");
+
+  document.getElementById("app").innerHTML =
+    '<div id="setupscreen">' +
+      '<div class="topbar">' +
+        '<div><div class="topbar-title">Other Breakouts</div>' +
+        '<div class="topbar-sub">RANDOM GROUP GENERATOR</div></div>' +
+        '<div class="topbar-right">' +
+          '<button class="btn-sm btn-ghost" onclick="goBack()">← Sessions</button>' +
+          '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="setup-panel"><div class="setup-inner">' +
+        '<div class="setup-title">Set up your breakout</div>' +
+        '<div class="setup-sub">Confirm the participant list and choose how many groups to create.</div>' +
+        '<div class="field-label">Number of groups</div>' +
+        '<div class="groups-row">' +
+          '<input id="num-groups" class="groups-input" type="number" min="2" max="10" value="'+numGroups+'" oninput="numGroups=parseInt(this.value)||2"/>' +
+          '<span class="groups-label">groups</span>' +
+        '</div>' +
+        '<div class="field-label">Participants ('+participants.length+')</div>' +
+        '<div class="participant-tags">'+tagsHTML+'</div>' +
+        '<div class="add-row">' +
+          '<input id="add-p" class="add-input" placeholder="Add a participant..." value="'+esc(newParticipantVal)+'"' +
+            ' oninput="newParticipantVal=this.value"' +
+            ' onkeydown="if(event.key===\'Enter\')addParticipant()"/>' +
+          '<button class="add-btn" onclick="addParticipant()">Add</button>' +
+        '</div>' +
+        '<button class="shuffle-btn" onclick="launchRandom()" '+(participants.length<2?'disabled':'')+'>Shuffle Groups</button>' +
+      '</div></div>' +
+    '</div>';
+
+  document.getElementById("add-p").focus();
+}
+
+function removeParticipant(i) { participants.splice(i,1); renderSetup(); }
+
+function addParticipant() {
+  var val = newParticipantVal.trim();
+  if (!val) return;
+  participants.push(val);
+  newParticipantVal = "";
+  renderSetup();
+}
+
+function launchRandom() {
+  var n = Math.max(2, Math.min(10, parseInt(document.getElementById("num-groups").value||numGroups)));
+  numGroups = n;
+  var shuffled = participants.slice().sort(function(){ return Math.random()-0.5; });
+  var groups = [];
+  for (var i=0; i<n; i++) groups.push({ name:"Group "+(i+1), members:[] });
+  shuffled.forEach(function(p,i){ groups[i%n].members.push(p); });
+  revealedGroups = groups;
+  runShuffleAnimation(revealedGroups);
+}
+
+// ── SHUFFLE ANIMATION ─────────────────────────────────────────────────────
+function runShuffleAnimation(groups) {
+  var allNames = [];
+  groups.forEach(function(g){ g.members.forEach(function(m){ allNames.push(m); }); });
+
+  var animEl = document.createElement("div");
+  animEl.id = "shuffle-anim";
+  animEl.innerHTML =
+    '<div class="anim-title">Shuffling groups...</div>' +
+    '<div class="anim-names" id="anim-names">' +
+      allNames.map(function(n){ return '<div class="anim-name active">'+esc(n)+'</div>'; }).join("") +
+    '</div>' +
+    '<div class="anim-progress"><div class="anim-bar" id="anim-bar" style="width:0%"></div></div>';
+  document.getElementById("app").appendChild(animEl);
+
+  var PHASE1 = 1800;
+  var startTime = null;
+
+  function tick(ts) {
+    if (!startTime) startTime = ts;
+    var elapsed = ts - startTime;
+    var progress = Math.min(elapsed / PHASE1, 1);
+    var bar = document.getElementById("anim-bar");
+    if (bar) bar.style.width = (progress * 65) + "%";
+
+    var nameEls = document.querySelectorAll(".anim-name");
+    if (nameEls.length && Math.random() > 0.55) {
+      var shuffledNames = allNames.slice().sort(function(){ return Math.random()-0.5; });
+      nameEls.forEach(function(el,i){ if(shuffledNames[i]) el.textContent = shuffledNames[i]; });
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      // Settle names, update title
+      var nameEls2 = document.querySelectorAll(".anim-name");
+      nameEls2.forEach(function(el){ el.classList.remove("active"); });
+      var title = animEl.querySelector(".anim-title");
+      if (title) { title.style.animation="none"; title.textContent="Groups ready."; }
+      if (bar) bar.style.width = "80%";
+      setTimeout(function(){ revealCards(animEl, groups); }, 500);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+// ── CARD REVEAL ───────────────────────────────────────────────────────────
+function revealCards(animEl, groups) {
+  screen = "results";
+  document.getElementById("app").innerHTML = buildResultsShell();
+  animEl.remove();
+
+  var container = document.getElementById("groups-grid");
+  groups.forEach(function(g, i) {
+    setTimeout(function() {
+      var card = document.createElement("div");
+      card.className = "group-card gc"+(i%6);
+      card.innerHTML = buildCardHTML(g, i);
+      container.appendChild(card);
+      card.querySelectorAll(".member-move-btn").forEach(function(btn){
+        btn.onclick = function(){ showMoveModal(btn.dataset.member, i); };
+      });
+    }, i * 280);
+  });
+}
+
+// ── RESULTS ───────────────────────────────────────────────────────────────
+function buildResultsShell() {
+  var s = SESSIONS[currentSession];
+  var total = revealedGroups.reduce(function(a,g){ return a+g.members.length; },0);
+  return '<div id="resultsscreen">' +
+    '<div class="topbar">' +
+      '<div><div class="topbar-title">'+esc(s.name)+'</div>' +
+      '<div class="topbar-sub">BREAKOUT GROUPS · DENVER HBR · JULY 2026</div></div>' +
+      '<div class="topbar-right">' +
+        '<button class="btn-sm btn-ghost" onclick="reshufflePrompt()">Reshuffle</button>' +
+        '<button class="btn-sm btn-ghost" onclick="goBack()">← Sessions</button>' +
+        '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="results-body">' +
+      '<div class="results-header">' +
+        '<div class="results-title">'+esc(s.name)+'</div>' +
+        '<div class="results-sub">'+revealedGroups.length+' groups · '+total+' participants · tap a name to move them</div>' +
+      '</div>' +
+      '<div class="groups-grid" id="groups-grid"></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildCardHTML(g, idx) {
+  var membersHTML = g.members.map(function(m) {
+    return '<div class="member-row">' +
+      '<span class="member-name">'+esc(m)+'</span>' +
+      '<button class="member-move-btn" data-member="'+esc(m)+'">Move</button>' +
+      '</div>';
+  }).join("");
+  return '<div class="group-card-header">' +
+      '<div class="group-card-num">Group '+(idx+1)+'</div>' +
+      '<div class="group-card-name">'+esc(g.name)+'</div>' +
+    '</div>' +
+    '<div class="group-card-body">' +
+      membersHTML +
+      '<div class="group-card-count">'+g.members.length+' member'+(g.members.length!==1?'s':'')+'</div>' +
+    '</div>';
+}
+
+function renderResults() {
+  document.getElementById("app").innerHTML = buildResultsShell();
+  var container = document.getElementById("groups-grid");
+  revealedGroups.forEach(function(g, i) {
+    var card = document.createElement("div");
+    card.className = "group-card gc"+(i%6);
+    card.innerHTML = buildCardHTML(g, i);
+    container.appendChild(card);
+    card.querySelectorAll(".member-move-btn").forEach(function(btn){
+      btn.onclick = function(){ showMoveModal(btn.dataset.member, i); };
+    });
+  });
+}
+
+// ── MOVE MODAL ────────────────────────────────────────────────────────────
+function showMoveModal(memberName, fromIdx) {
+  var otherGroupsHTML = revealedGroups.map(function(g,i) {
+    if (i === fromIdx) return "";
+    return '<button class="modal-group-btn" onclick="moveMember(\''+esc(memberName)+'\','+fromIdx+','+i+')">'+esc(g.name)+'</button>';
+  }).join("");
+
+  var ov = document.createElement("div");
+  ov.className = "modal-overlay";
+  ov.innerHTML =
+    '<div class="modal-box">' +
+      '<div class="modal-title">Move '+esc(memberName)+'</div>' +
+      '<div class="modal-sub">Currently in: '+esc(revealedGroups[fromIdx].name)+'</div>' +
+      otherGroupsHTML +
+      '<button class="modal-cancel-btn" onclick="this.closest(\'.modal-overlay\').remove()">Cancel</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  ov.addEventListener("click", function(e){ if(e.target===ov) ov.remove(); });
+}
+
+function moveMember(name, fromIdx, toIdx) {
+  document.querySelector(".modal-overlay")?.remove();
+  revealedGroups[fromIdx].members = revealedGroups[fromIdx].members.filter(function(m){ return m!==name; });
+  revealedGroups[toIdx].members.push(name);
+  renderResults();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function reshufflePrompt() {
+  var s = SESSIONS[currentSession];
+  if (s.random) { screen="setup"; render(); }
+  else {
+    revealedGroups = s.groups.map(function(g){ return {name:g.name, members:g.members.slice()}; });
+    runShuffleAnimation(revealedGroups);
+  }
+}
+
+function goBack() {
+  screen="picker"; currentSession=null; revealedGroups=[];
+  render();
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+render();
+</script>
+</body>
+</html>
