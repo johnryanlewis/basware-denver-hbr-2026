@@ -431,7 +431,6 @@ function renderFacilitator() {
   const spotlightDeal = spotlightAEObj?.deals?.find(d=>d.id===appState.activeDeal) || null;
   const totalSubs = appState.aes.reduce((acc,ae)=>acc+(ae.deals||[]).reduce((a,d)=>a+(d.submissions||[]).length,0),0);
   const totalDeals = appState.aes.reduce((acc,ae)=>acc+(ae.deals||[]).length,0);
-  const aesPresented = appState.aes.filter(ae=>(ae.deals||[]).length>0).length;
 
   // Unique contributors helpers
   function uniqueContribs(subs){ return new Set((subs||[]).map(s=>s.author||'Anonymous')).size; }
@@ -702,7 +701,6 @@ function renderFacilitator() {
           <div class="stat-box"><div class="stat-box-label">Total AEs</div><div class="stat-box-value">${appState.aes.length}</div></div>
           <div class="stat-box"><div class="stat-box-label">Deals Added</div><div class="stat-box-value">${totalDeals}</div></div>
           <div class="stat-box"><div class="stat-box-label" style="color:#04D3AA">Ideas Submitted</div><div class="stat-box-value" style="color:#04D3AA">${totalSubs}</div></div>
-          <div class="stat-box"><div class="stat-box-label" style="color:#6404DA">AEs Presented</div><div class="stat-box-value" style="color:#a56cf5">${aesPresented}</div></div>
         </div>
       </div>
     </div>
