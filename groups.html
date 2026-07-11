@@ -4,7 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Group Shuffler — HBR Denver</title>
-<link rel="stylesheet" href="_ds/basware-brand-7e62478d-2a59-42a0-9052-8e7b9c1c1f62/colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;}
@@ -90,10 +92,10 @@
 
   /* Group color accents */
   .gc0 .group-card-header{border-top:3px solid #04D3AA;} .gc0 .group-card-num{color:#04D3AA;}
-  .gc1 .group-card-header{border-top:3px solid #6404DA;} .gc1 .group-card-num{color:#6404DA;}
+  .gc1 .group-card-header{border-top:3px solid #8B5CF6;} .gc1 .group-card-num{color:#8B5CF6;}
   .gc2 .group-card-header{border-top:3px solid #549CFF;} .gc2 .group-card-num{color:#549CFF;}
   .gc3 .group-card-header{border-top:3px solid #FA6496;} .gc3 .group-card-num{color:#FA6496;}
-  .gc4 .group-card-header{border-top:3px solid #8E97B3;} .gc4 .group-card-num{color:#8E97B3;}
+  .gc4 .group-card-header{border-top:3px solid #8888AA;} .gc4 .group-card-num{color:#8888AA;}
   .gc5 .group-card-header{border-top:3px solid #04D3AA;} .gc5 .group-card-num{color:#04D3AA;}
 
   /* ── Move modal ── */
@@ -125,13 +127,13 @@ const SESSIONS = {
   },
   value: {
     name: "The Value Equation",
-    sub: "Executive Priority Breakout · 5 groups · 27 participants",
+    sub: "Executive Priority Breakout · 5 groups · 32 participants",
     groups: [
-      { name:"ERP Modernization",              members:["Jason Palangio","Kyle Flaherty","Charlie Rafferty","Mike Segoviano","Jacob Wright","Scott Craven"] },
-      { name:"Working Capital Improvement",    members:["Sara Abbadi","Joe Hager","Nick Kidd","Luke Porter","Michael Creeden"] },
-      { name:"Acquisition Integration",        members:["Dean Burkus","Taylor Hess","Paul Koscielski","Maggie Smeltzer","Summer Vogel"] },
-      { name:"Shared Services Transformation", members:["Justin Wade","Dale Magoon","Mara Miller","Courtney Talcott","Malia Ott","Peter Kosovec"] },
-      { name:"Compliance Modernization",       members:["Ramsha Mardini","Danette Carlucci","Jay Wick","Martin Decker","Darren Newahine","Kristen Peterka"] }
+      { name:"ERP Modernization",              members:["Kristen Peterka","Dean Burkus","Kevin Farrell","Charlie Rafferty","Mara Miller","Tina Hubbard","Maggie Smeltzer"] },
+      { name:"Working Capital Improvement",    members:["Jacob Wright","Darren Nawahine","Danette Carlucci","Joe Hager","Steve Kariker","Alli Punch","Courtney Talcott"] },
+      { name:"Acquisition Integration",        members:["Peter Kosovec","Malia Ott","Kyle Flaherty","Dale Magoon","Jay Wick","Luke Porter","Tom Santacroce"] },
+      { name:"Shared Services Transformation", members:["Summer Vogel","Martin Decker","Scott Craven","Justin Wade","Jason Palangio","Sara Abbadi"] },
+      { name:"Compliance Modernization",       members:["Eric Strack","Michael Creeden","Taylor Hess","Ramsha Mardini","Mike Segoviano","Nick Kidd"] }
     ]
   },
   other: { name: "Other Breakouts", sub: "Random group generator · custom participants", random: true }
@@ -145,7 +147,9 @@ const DEFAULT_PARTICIPANTS = [
   "Courtney Talcott","Justin Wade","Jay Wick",
   "Jacob Wright","Peter Kosovec","Michael Creeden","Scott Craven",
   "Luke Porter","Summer Vogel","Malia Ott","Martin Decker",
-  "Darren Newahine","Kristen Peterka"
+  "Darren Nawahine","Kristen Peterka",
+  "Kevin Farrell","Tina Hubbard","Steve Kariker","Alli Punch",
+  "Tom Santacroce","Eric Strack"
 ];
 
 // ── App state ─────────────────────────────────────────────────────────────
@@ -176,7 +180,9 @@ function renderPicker() {
 
   app.innerHTML =
     '<div id="picker">' +
-      '<img class="picker-tick" src="assets/tick-mint.svg" alt=""/>' +
+      '<svg class="picker-tick" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M15 60 L48 93 L105 27" stroke="#04D3AA" stroke-width="10" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>' +
+      '</svg>' +
       '<div class="picker-inner">' +
         '<div class="picker-brand">Basware</div>' +
         '<div class="picker-title">Group Shuffler</div>' +
