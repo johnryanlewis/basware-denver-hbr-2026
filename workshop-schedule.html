@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Workshop Room — HBR Denver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:#6404DA;border-radius:3px;}
+  a{color:#04D3AA;}
+  a:hover{color:#fff;}
+
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes cardReveal{from{opacity:0;transform:scale(0.9) translateY(16px);}to{opacity:1;transform:scale(1) translateY(0);}}
+  @keyframes rowReveal{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:translateX(0);}}
+  @keyframes pulseOpacity{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  @keyframes nameShuffle{0%,100%{opacity:1;}50%{opacity:0.3;}}
+  @keyframes barFill{from{width:0%;}to{width:100%;}}
+
+  #app{min-height:100vh;position:relative;}
+
+  /* ── Picker ── */
+  .picker-tick{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);width:480px;height:480px;opacity:0.05;pointer-events:none;}
+  .picker-inner{text-align:center;max-width:480px;width:100%;position:relative;z-index:1;}
+  .picker-brand{font-size:12px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;}
+  .picker-title{font-size:38px;font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:8px;text-wrap:balance;}
+  .picker-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;letter-spacing:1px;}
+  .picker-tagline{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:36px;}
+  .picker-btn{width:100%;background:#04D3AA;color:#120A48;border:none;border-radius:2px;padding:18px 24px;font-weight:900;font-size:17px;cursor:pointer;letter-spacing:0.3px;font-family:'Inter',system-ui,sans-serif;margin-bottom:12px;transition:opacity 0.12s;}
+  .picker-btn:hover{opacity:0.9;}
+  .picker-note{font-size:11px;color:rgba(255,255,255,0.25);line-height:1.7;}
+
+  /* ── Topbar ── */
+  .topbar{background:#1c1262;border-bottom:2px solid #6404DA;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+  .topbar-title{font-size:16px;font-weight:900;}
+  .topbar-sub{font-size:10px;color:#04D3AA;font-weight:700;letter-spacing:1.5px;margin-top:2px;}
+  .topbar-right{display:flex;gap:8px;align-items:center;}
+  .btn-sm{border:none;border-radius:2px;padding:6px 12px;font-weight:700;font-size:11px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;white-space:nowrap;}
+  .btn-ghost{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.2);}
+  .btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.5);}
+  .brand-tag{text-align:right;}
+  .brand-tag .name{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:2px;}
+  .brand-tag .tagline{font-size:9px;color:rgba(255,255,255,0.4);}
+
+  /* ── Shuffle animation ── */
+  #shuffle-anim{position:fixed;inset:0;background:#120A48;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;}
+  .anim-title{font-size:13px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;animation:pulseOpacity 0.8s infinite;}
+  .anim-names{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:640px;}
+  .anim-name{font-size:13px;font-weight:600;color:rgba(255,255,255,0.55);padding:5px 12px;background:#1c1262;border-radius:2px;border:1px solid rgba(100,4,218,0.3);animation:nameShuffle 0.6s infinite;}
+  .anim-progress{width:220px;height:2px;background:#2D2D6B;border-radius:1px;overflow:hidden;margin-top:8px;}
+  .anim-bar{height:100%;background:#04D3AA;animation:barFill 1.6s linear forwards;}
+
+  /* ── Results ── */
+  #resultsscreen{display:flex;flex-direction:column;min-height:100vh;}
+  .results-body{flex:1;padding:24px 20px;overflow-y:auto;max-width:900px;margin:0 auto;width:100%;}
+  .results-header{text-align:center;margin-bottom:28px;}
+  .results-title{font-size:22px;font-weight:800;margin-bottom:4px;}
+  .results-sub{font-size:12px;color:rgba(255,255,255,0.45);}
+
+  /* Timeslot cards */
+  .slot-card{background:#1c1262;border-radius:2px;border:1px solid rgba(100,4,218,0.35);margin-bottom:14px;overflow:hidden;animation:cardReveal 0.4s cubic-bezier(.2,.6,.2,1) both;}
+  .slot-header{padding:14px 18px;border-bottom:1px solid rgba(100,4,218,0.2);display:flex;justify-content:space-between;align-items:center;}
+  .slot-day{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+  .slot-time{font-size:18px;font-weight:900;}
+  .slot-count{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;}
+  .slot-badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;}
+
+  /* AE rows */
+  .slot-body{padding:10px 18px 14px;}
+  .ae-row{display:flex;justify-content:space-between;align-items:center;background:#120A48;border-radius:2px;padding:9px 12px;margin-bottom:6px;animation:rowReveal 0.3s ease both;}
+  .ae-position{font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);width:24px;flex-shrink:0;}
+  .ae-name{font-size:14px;font-weight:600;color:#fff;flex:1;padding:0 10px;}
+  .ae-move-btn{background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:2px;color:rgba(255,255,255,0.35);font-size:10px;padding:2px 8px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;}
+  .ae-move-btn:hover{color:#fff;border-color:rgba(255,255,255,0.4);}
+  .slot-empty{font-size:12px;color:rgba(255,255,255,0.2);font-style:italic;padding:8px 2px;}
+
+  /* Move modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+  .modal-box{background:#1c1262;border:1px solid #6404DA;border-radius:2px;padding:24px;width:100%;max-width:400px;animation:fadeSlide 0.2s ease;}
+  .modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}
+  .modal-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:18px;}
+  .modal-slot-btn{width:100%;background:#120A48;border:1px solid rgba(100,4,218,0.3);border-radius:2px;color:#fff;font-size:13px;font-weight:600;padding:11px 14px;cursor:pointer;text-align:left;margin-bottom:8px;font-family:'Inter',system-ui,sans-serif;transition:border-color 0.15s;display:flex;justify-content:space-between;align-items:center;}
+  .modal-slot-btn:hover{border-color:#6404DA;}
+  .modal-slot-time{font-size:11px;color:rgba(255,255,255,0.4);}
+  .modal-cancel-btn{width:100%;background:transparent;color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:2px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',system-ui,sans-serif;margin-top:4px;}
+</style>
+<!-- Firebase compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ── Firebase ──────────────────────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey: "AIzaSyAB2ZwZHBhk9GLcAeeNIs47Lwb531yP0Ug",
+  authDomain: "basware-denver-hbr-2026.firebaseapp.com",
+  databaseURL: "https://basware-denver-hbr-2026-default-rtdb.firebaseio.com",
+  projectId: "basware-denver-hbr-2026",
+  storageBucket: "basware-denver-hbr-2026.firebasestorage.app",
+  messagingSenderId: "1058060933587",
+  appId: "1:1058060933587:web:442aed2c14100a7c283726"
+}, "workshop-schedule-app");
+var db = firebase.app("workshop-schedule-app").database();
+var SCHEDULE_REF = db.ref("workshop-schedule");
+
+function publishSchedule() {
+  var btn = document.getElementById("btn-publish");
+  if (btn) { btn.textContent = "Publishing..."; btn.disabled = true; }
+  var clean = JSON.parse(JSON.stringify(schedule, function(k,v){ return v===null?undefined:v; }));
+  SCHEDULE_REF.set({ slots: clean, publishedAt: Date.now() }, function(err) {
+    if (err) {
+      alert("Publish failed: " + err.message);
+      if (btn) { btn.textContent = "Publish Schedule"; btn.disabled = false; }
+    } else {
+      if (btn) {
+        btn.textContent = "Published!";
+        btn.style.background = "#04D3AA";
+        btn.style.color = "#120A48";
+        setTimeout(function() {
+          if (btn) { btn.textContent = "Republish"; btn.disabled = false; btn.style.background=""; btn.style.color=""; }
+        }, 2500);
+      }
+    }
+  });
+}
+
+// ── Fixed first 3 + pool of remaining 16 ─────────────────────────────────
+var FIXED_FIRST_3 = ["Ramsha Mardini", "Taylor Hess", "Kyle Flaherty"];
+
+var REMAINING_POOL = [
+  "Jason Palangio", "Charlie Rafferty", "Sara Abbadi", "Nick Kidd",
+  "Jay Wick", "Courtney Talcott", "Mara Miller", "Joe Hager",
+  "Maggie Smeltzer", "Luke Porter", "Justin Wade", "Paul Koscielski",
+  "Dale Magoon", "Mike Segoviano", "Danette Carlucci", "Dean Burkus"
+];
+
+var ACCENTS = ['#04D3AA', '#6404DA', '#549CFF', '#FA6496'];
+var ACCENT_BG = { '#04D3AA':'rgba(4,211,170,0.12)', '#6404DA':'rgba(100,4,218,0.12)', '#549CFF':'rgba(84,156,255,0.12)', '#FA6496':'rgba(250,100,150,0.12)' };
+var ACCENT_BORDER = { '#04D3AA':'rgba(4,211,170,0.3)', '#6404DA':'rgba(100,4,218,0.3)', '#549CFF':'rgba(84,156,255,0.3)', '#FA6496':'rgba(250,100,150,0.3)' };
+
+// ── Timeslots definition ──────────────────────────────────────────────────
+var SLOTS = [
+  { day:"Monday",    time:"4:30 PM",  label:"Session 1", count:3 },
+  { day:"Tuesday",   time:"10:00 AM", label:"Session 2", count:5 },
+  { day:"Tuesday",   time:"4:00 PM",  label:"Session 3", count:5 },
+  { day:"Wednesday", time:"9:00 AM",  label:"Session 4", count:5 }
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+var screen = "picker";
+var schedule = []; // [{day, time, label, aes:[]}]
+
+// ── Router ────────────────────────────────────────────────────────────────
+function render() {
+  if (screen === "picker")  renderPicker();
+  if (screen === "results") renderResults();
+}
+
+// ── PICKER ────────────────────────────────────────────────────────────────
+function renderPicker() {
+  document.getElementById("app").innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden;">' +
+      '<img class="picker-tick" src="data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true"><path fill="#04D3AA" d="M13.89,32.65l10.25,22.1c.8,1.78,3,2.65,4.73,2.65s4.18-1.06,5-2.81L51.42,12c.27-.52,.39-1.05,.39-1.59,0-2.49-2.18-3.76-4.95-3.76-1.78,0-4.09,.77-4.86,2.31l-13.31,34.01-6.71-15.33c-.7-1.54-2.87-2.31-4.65-2.31-2.76,0-5.09,1.27-5.09,3.76,0,.55,1.64,3.56,1.64,3.56h0Z"></path></svg>') + '"/>' +
+      '<div class="picker-inner">' +
+        '<div class="picker-brand">Basware</div>' +
+        '<div class="picker-title">The Workshop Room</div>' +
+        '<div class="picker-sub">HBR Denver · Mile High Focus · July 2026</div>' +
+        '<div class="picker-tagline">The deals that make it all just happen</div>' +
+        '<button class="picker-btn" onclick="startShuffle()">Assign Workshop Slots</button>' +
+        '<div class="picker-note">' +
+          '19 AEs · 4 timeslots across Monday, Tuesday and Wednesday<br>' +
+          'Tap to randomly assign each AE to their workshop slot.' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+// ── BUILD SCHEDULE ────────────────────────────────────────────────────────
+function buildSchedule() {
+  var shuffled = REMAINING_POOL.slice().sort(function(){ return Math.random() - 0.5; });
+  var pool = shuffled.slice();
+  schedule = SLOTS.map(function(slot, i) {
+    return {
+      day: slot.day,
+      time: slot.time,
+      label: slot.label,
+      aes: i === 0 ? FIXED_FIRST_3.slice() : pool.splice(0, slot.count)
+    };
+  });
+}
+
+// ── SHUFFLE ANIMATION ─────────────────────────────────────────────────────
+function startShuffle() {
+  buildSchedule();
+  var allNames = FIXED_FIRST_3.concat(REMAINING_POOL);
+
+  var animEl = document.createElement("div");
+  animEl.id = "shuffle-anim";
+  animEl.innerHTML =
+    '<div class="anim-title">Assigning workshop slots…</div>' +
+    '<div class="anim-names" id="anim-names">' +
+      allNames.map(function(n,i){ return '<div class="anim-name" style="animation-delay:'+((i%6)*0.09)+'s">'+esc(n)+'</div>'; }).join("") +
+    '</div>' +
+    '<div class="anim-progress"><div class="anim-bar"></div></div>';
+  document.getElementById("app").appendChild(animEl);
+
+  setTimeout(function(){ revealSchedule(animEl); }, 1600);
+}
+
+// ── REVEAL ────────────────────────────────────────────────────────────────
+function revealSchedule(animEl) {
+  screen = "results";
+  document.getElementById("app").innerHTML = buildResultsShell();
+  animEl.remove();
+
+  var container = document.getElementById("schedule-container");
+  schedule.forEach(function(slot, i) {
+    setTimeout(function() {
+      var card = buildSlotCard(slot, i);
+      container.appendChild(card);
+    }, i * 250);
+  });
+}
+
+// ── RESULTS ───────────────────────────────────────────────────────────────
+function buildResultsShell() {
+  return '<div id="resultsscreen">' +
+    '<div class="topbar">' +
+      '<div><div class="topbar-title">The Workshop Room</div>' +
+      '<div class="topbar-sub">DEAL WORKSHOP SCHEDULE · DENVER HBR</div></div>' +
+      '<div class="topbar-right">' +
+        '<button id="btn-publish" class="btn-sm btn-teal" onclick="publishSchedule()" style="background:#04D3AA;color:#120A48;">Publish Schedule</button>' +
+        '<button class="btn-sm btn-ghost" onclick="reshufflePrompt()">Reshuffle</button>' +
+        '<button class="btn-sm btn-ghost" onclick="goBack()">← Back</button>' +
+        '<div class="brand-tag"><div class="name">BASWARE</div><div class="tagline">Now it all just happens™</div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="results-body">' +
+      '<div class="results-header">' +
+        '<div class="results-title">Workshop Room Schedule</div>' +
+        '<div class="results-sub">19 AEs · 4 sessions · tap &quot;Move&quot; to shift an AE between slots</div>' +
+      '</div>' +
+      '<div id="schedule-container"></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildSlotCard(slot, idx) {
+  var accent = ACCENTS[idx % ACCENTS.length];
+  var card = document.createElement("div");
+  card.className = "slot-card";
+
+  var aeRowsHTML = slot.aes.length === 0
+    ? '<div class="slot-empty">No AEs assigned</div>'
+    : slot.aes.map(function(ae, j) {
+        return '<div class="ae-row" style="animation-delay:'+(j*0.08)+'s">' +
+          '<div class="ae-position">'+(j+1)+'</div>' +
+          '<div class="ae-name">'+esc(ae)+'</div>' +
+          '<button class="ae-move-btn" data-ae="'+esc(ae)+'">Move</button>' +
+        '</div>';
+      }).join("");
+
+  card.innerHTML =
+    '<div class="slot-header" style="border-top:3px solid '+accent+';">' +
+      '<div>' +
+        '<div class="slot-day" style="color:'+accent+';">'+esc(slot.day)+'</div>' +
+        '<div class="slot-time">'+esc(slot.time)+'</div>' +
+        '<div class="slot-count">'+slot.aes.length+' AE'+(slot.aes.length!==1?'s':'')+'</div>' +
+      '</div>' +
+      '<span class="slot-badge" style="background:'+ACCENT_BG[accent]+';color:'+accent+';border:1px solid '+ACCENT_BORDER[accent]+';">'+esc(slot.label)+'</span>' +
+    '</div>' +
+    '<div class="slot-body">'+aeRowsHTML+'</div>';
+
+  card.querySelectorAll(".ae-move-btn").forEach(function(btn){
+    btn.onclick = function(){ showMoveModal(btn.dataset.ae, idx); };
+  });
+
+  return card;
+}
+
+function renderResults() {
+  document.getElementById("app").innerHTML = buildResultsShell();
+  var container = document.getElementById("schedule-container");
+  schedule.forEach(function(slot, i) {
+    container.appendChild(buildSlotCard(slot, i));
+  });
+}
+
+// ── MOVE MODAL ────────────────────────────────────────────────────────────
+function showMoveModal(aeName, fromSlotIdx) {
+  var otherSlotsHTML = schedule.map(function(slot, i) {
+    if (i === fromSlotIdx) return "";
+    return '<button class="modal-slot-btn" onclick="moveAE(\''+esc(aeName)+'\','+fromSlotIdx+','+i+')">' +
+      '<span>'+esc(slot.day)+' · '+esc(slot.time)+'</span>' +
+      '<span class="modal-slot-time">'+esc(slot.label)+'</span>' +
+    '</button>';
+  }).join("");
+
+  var ov = document.createElement("div");
+  ov.className = "modal-overlay";
+  ov.innerHTML =
+    '<div class="modal-box">' +
+      '<div class="modal-title">Move '+esc(aeName)+'</div>' +
+      '<div class="modal-sub">Currently in: '+esc(schedule[fromSlotIdx].day)+' '+esc(schedule[fromSlotIdx].time)+'</div>' +
+      otherSlotsHTML +
+      '<button class="modal-cancel-btn" onclick="this.closest(\'.modal-overlay\').remove()">Cancel</button>' +
+    '</div>';
+  document.body.appendChild(ov);
+  ov.addEventListener("click", function(e){ if(e.target===ov) ov.remove(); });
+}
+
+function moveAE(aeName, fromIdx, toIdx) {
+  var existing = document.querySelector(".modal-overlay");
+  if (existing) existing.remove();
+  schedule[fromIdx].aes = schedule[fromIdx].aes.filter(function(ae){ return ae !== aeName; });
+  schedule[toIdx].aes.push(aeName);
+  renderResults();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function reshufflePrompt() {
+  startShuffle();
+}
+
+function goBack() {
+  screen = "picker";
+  schedule = [];
+  render();
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+render();
+</script>
+</body>
+</html>
