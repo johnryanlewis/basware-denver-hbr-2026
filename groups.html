@@ -4,9 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Group Shuffler — HBR Denver</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_ds/basware-brand-7e62478d-2a59-42a0-9052-8e7b9c1c1f62/colors_and_type.css">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;}
@@ -92,10 +90,10 @@
 
   /* Group color accents */
   .gc0 .group-card-header{border-top:3px solid #04D3AA;} .gc0 .group-card-num{color:#04D3AA;}
-  .gc1 .group-card-header{border-top:3px solid #8B5CF6;} .gc1 .group-card-num{color:#8B5CF6;}
+  .gc1 .group-card-header{border-top:3px solid #6404DA;} .gc1 .group-card-num{color:#6404DA;}
   .gc2 .group-card-header{border-top:3px solid #549CFF;} .gc2 .group-card-num{color:#549CFF;}
   .gc3 .group-card-header{border-top:3px solid #FA6496;} .gc3 .group-card-num{color:#FA6496;}
-  .gc4 .group-card-header{border-top:3px solid #8888AA;} .gc4 .group-card-num{color:#8888AA;}
+  .gc4 .group-card-header{border-top:3px solid #8E97B3;} .gc4 .group-card-num{color:#8E97B3;}
   .gc5 .group-card-header{border-top:3px solid #04D3AA;} .gc5 .group-card-num{color:#04D3AA;}
 
   /* ── Move modal ── */
@@ -180,9 +178,7 @@ function renderPicker() {
 
   app.innerHTML =
     '<div id="picker">' +
-      '<svg class="picker-tick" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
-        '<path d="M15 60 L48 93 L105 27" stroke="#04D3AA" stroke-width="10" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>' +
-      '</svg>' +
+      '<img class="picker-tick" src="assets/tick-mint.svg" alt=""/>' +
       '<div class="picker-inner">' +
         '<div class="picker-brand">Basware</div>' +
         '<div class="picker-title">Group Shuffler</div>' +
