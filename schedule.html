@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Workshop Room Schedule — HBR Denver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:#120A48;color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#6404DA;border-radius:2px;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes cardIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+  #app{min-height:100vh;}
+
+  /* Loading */
+  #loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:14px;}
+  .spinner{width:28px;height:28px;border:3px solid #2D2D6B;border-top-color:#6404DA;border-radius:50%;animation:spin 0.8s linear infinite;}
+
+  /* Header */
+  .page-header{background:#1c1262;border-bottom:2px solid #6404DA;padding:16px 20px;text-align:center;}
+  .header-brand{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+  .header-title{font-size:22px;font-weight:900;letter-spacing:-0.3px;margin-bottom:3px;}
+  .header-sub{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.5px;}
+
+  /* Body */
+  .page-body{padding:20px;max-width:680px;margin:0 auto;}
+
+  /* Slot cards */
+  .slot-card{background:#1c1262;border-radius:2px;border:1px solid rgba(100,4,218,0.35);margin-bottom:14px;overflow:hidden;animation:cardIn 0.4s cubic-bezier(.2,.6,.2,1) both;}
+  .slot-header{padding:14px 18px;border-bottom:1px solid rgba(100,4,218,0.2);display:flex;justify-content:space-between;align-items:center;}
+  .slot-day{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+  .slot-time{font-size:20px;font-weight:900;}
+  .slot-count{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;}
+  .slot-badge{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;}
+  .slot-body{padding:10px 18px 14px;display:flex;flex-direction:column;gap:6px;}
+  .ae-row{display:flex;align-items:center;background:#120A48;border-radius:2px;padding:9px 12px;}
+  .ae-num{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);width:22px;flex-shrink:0;}
+  .ae-name{font-size:14px;font-weight:600;color:#fff;}
+
+  /* Unpublished state */
+  #unpublished{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden;}
+  .unpub-tick{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:400px;height:400px;opacity:0.04;pointer-events:none;}
+  .unpub-inner{text-align:center;max-width:400px;position:relative;z-index:1;}
+  .unpub-brand{font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+  .unpub-title{font-size:28px;font-weight:900;line-height:1.2;margin-bottom:8px;}
+  .unpub-sub{font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;}
+
+  /* Footer */
+  .page-footer{text-align:center;padding:20px;font-size:11px;color:rgba(255,255,255,0.2);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="loading">
+    <div style="font-size:11px;font-weight:700;color:#04D3AA;letter-spacing:3px;">BASWARE</div>
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.45);">Loading schedule...</div>
+  </div>
+</div>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAB2ZwZHBhk9GLcAeeNIs47Lwb531yP0Ug",
+  authDomain: "basware-denver-hbr-2026.firebaseapp.com",
+  databaseURL: "https://basware-denver-hbr-2026-default-rtdb.firebaseio.com",
+  projectId: "basware-denver-hbr-2026",
+  storageBucket: "basware-denver-hbr-2026.firebasestorage.app",
+  messagingSenderId: "1058060933587",
+  appId: "1:1058060933587:web:442aed2c14100a7c283726"
+}, "schedule-readonly-app");
+
+var db = firebase.app("schedule-readonly-app").database();
+var SCHEDULE_REF = db.ref("workshop-schedule");
+
+var ACCENTS = ["#04D3AA","#8B5CF6","#549CFF","#FA6496"];
+var ACCENT_BG = {"#04D3AA":"rgba(4,211,170,0.1)","#8B5CF6":"rgba(139,92,246,0.1)","#549CFF":"rgba(84,156,255,0.1)","#FA6496":"rgba(250,100,150,0.1)"};
+var ACCENT_BORDER = {"#04D3AA":"rgba(4,211,170,0.25)","#8B5CF6":"rgba(139,92,246,0.25)","#549CFF":"rgba(84,156,255,0.25)","#FA6496":"rgba(250,100,150,0.25)"};
+
+// Timeout if Firebase doesn't respond
+setTimeout(function() {
+  var loading = document.getElementById("loading");
+  if (loading) {
+    loading.innerHTML = '<div style="font-size:13px;color:rgba(255,255,255,0.45);">Could not load schedule. <a href="javascript:location.reload()">Retry</a></div>';
+  }
+}, 8000);
+
+SCHEDULE_REF.on("value", function(snap) {
+  var data = snap.val();
+  if (!data || !data.slots) {
+    renderUnpublished();
+  } else {
+    renderSchedule(data.slots, data.publishedAt);
+  }
+}, function(err) {
+  document.getElementById("app").innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-size:13px;color:rgba(255,255,255,0.45);">Error: '+err.message+'</div>';
+});
+
+function renderUnpublished() {
+  document.getElementById("app").innerHTML =
+    '<div id="unpublished">' +
+      '<svg class="unpub-tick" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M15 60 L48 93 L105 27" stroke="#04D3AA" stroke-width="10" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>' +
+      '</svg>' +
+      '<div class="unpub-inner">' +
+        '<div class="unpub-brand">Basware</div>' +
+        '<div class="unpub-title">The Workshop Room</div>' +
+        '<div class="unpub-sub">The schedule hasn\'t been published yet.<br>Check back after the kick-off session.</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderSchedule(slots, publishedAt) {
+  var publishedStr = publishedAt
+    ? new Date(publishedAt).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'})
+    : '';
+
+  var slotsHTML = slots.map(function(slot, i) {
+    var accent = ACCENTS[i % ACCENTS.length];
+    var aeRowsHTML = (slot.aes||[]).map(function(ae, j) {
+      return '<div class="ae-row">' +
+        '<div class="ae-num">'+(j+1)+'</div>' +
+        '<div class="ae-name">'+esc(ae)+'</div>' +
+      '</div>';
+    }).join("");
+
+    return '<div class="slot-card" style="animation-delay:'+(i*0.1)+'s">' +
+      '<div class="slot-header" style="border-top:3px solid '+accent+';">' +
+        '<div>' +
+          '<div class="slot-day" style="color:'+accent+';">'+esc(slot.day)+'</div>' +
+          '<div class="slot-time">'+esc(slot.time)+'</div>' +
+          '<div class="slot-count">'+(slot.aes||[]).length+' AEs presenting</div>' +
+        '</div>' +
+        '<span class="slot-badge" style="background:'+ACCENT_BG[accent]+';color:'+accent+';border:1px solid '+ACCENT_BORDER[accent]+';">'+esc(slot.label)+'</span>' +
+      '</div>' +
+      '<div class="slot-body">'+aeRowsHTML+'</div>' +
+    '</div>';
+  }).join("");
+
+  document.getElementById("app").innerHTML =
+    '<div>' +
+      '<div class="page-header">' +
+        '<div class="header-brand">Basware · HBR Denver</div>' +
+        '<div class="header-title">The Workshop Room</div>' +
+        '<div class="header-sub">The Deals That Make It All Just Happen · July 2026</div>' +
+      '</div>' +
+      '<div class="page-body">' +
+        slotsHTML +
+      '</div>' +
+      '<div class="page-footer">' +
+        (publishedStr ? 'Schedule published ' + publishedStr : '') +
+        '<br>Now it all just happens™' +
+      '</div>' +
+    '</div>';
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
