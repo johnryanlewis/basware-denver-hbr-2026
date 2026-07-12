@@ -400,6 +400,8 @@ function renderChooser() {
       <button id="btn-facilitator" class="chooser-btn btn-purple">Facilitator - Big Screen</button>
       <button id="btn-audience" class="chooser-btn btn-teal">Submit Ideas - Audience</button>
       <button id="btn-aeview" class="chooser-btn btn-pink">View My Deals - AEs</button>
+      <div style="width:100%;height:1px;background:rgba(255,255,255,0.08);margin:8px 0;"></div>
+      <button id="btn-schedule" class="chooser-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.65);font-size:13px;padding:13px 24px;">View Workshop Room Schedule</button>
       <div class="chooser-note">
         Facilitators run the big screen.<br>
         Audience: submit ideas to any deal, any time.<br>
@@ -410,6 +412,7 @@ function renderChooser() {
   document.getElementById("btn-facilitator").onclick = showFacilitator;
   document.getElementById("btn-audience").onclick = showAudience;
   document.getElementById("btn-aeview").onclick = showAEView;
+  document.getElementById("btn-schedule").onclick = function(){ window.open("schedule.html","_blank"); };
 }
 
 // ── FACILITATOR ───────────────────────────────────────────────────────────
