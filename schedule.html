@@ -79,9 +79,9 @@ firebase.initializeApp({
 var db = firebase.app("schedule-readonly-app").database();
 var SCHEDULE_REF = db.ref("workshop-schedule");
 
-var ACCENTS = ["#04D3AA","#8B5CF6","#549CFF","#FA6496"];
-var ACCENT_BG = {"#04D3AA":"rgba(4,211,170,0.1)","#8B5CF6":"rgba(139,92,246,0.1)","#549CFF":"rgba(84,156,255,0.1)","#FA6496":"rgba(250,100,150,0.1)"};
-var ACCENT_BORDER = {"#04D3AA":"rgba(4,211,170,0.25)","#8B5CF6":"rgba(139,92,246,0.25)","#549CFF":"rgba(84,156,255,0.25)","#FA6496":"rgba(250,100,150,0.25)"};
+var ACCENTS = ["#04D3AA","#6404DA","#549CFF","#FA6496"];
+var ACCENT_BG = {"#04D3AA":"rgba(4,211,170,0.12)","#6404DA":"rgba(100,4,218,0.12)","#549CFF":"rgba(84,156,255,0.12)","#FA6496":"rgba(250,100,150,0.12)"};
+var ACCENT_BORDER = {"#04D3AA":"rgba(4,211,170,0.3)","#6404DA":"rgba(100,4,218,0.3)","#549CFF":"rgba(84,156,255,0.3)","#FA6496":"rgba(250,100,150,0.3)"};
 
 // Timeout if Firebase doesn't respond
 setTimeout(function() {
@@ -106,9 +106,7 @@ SCHEDULE_REF.on("value", function(snap) {
 function renderUnpublished() {
   document.getElementById("app").innerHTML =
     '<div id="unpublished">' +
-      '<svg class="unpub-tick" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">' +
-        '<path d="M15 60 L48 93 L105 27" stroke="#04D3AA" stroke-width="10" fill="none" stroke-linecap="square" stroke-linejoin="miter"/>' +
-      '</svg>' +
+      '<img class="unpub-tick" src="data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true"><path fill="#04D3AA" d="M13.89,32.65l10.25,22.1c.8,1.78,3,2.65,4.73,2.65s4.18-1.06,5-2.81L51.42,12c.27-.52,.39-1.05,.39-1.59,0-2.49-2.18-3.76-4.95-3.76-1.78,0-4.09,.77-4.86,2.31l-13.31,34.01-6.71-15.33c-.7-1.54-2.87-2.31-4.65-2.31-2.76,0-5.09,1.27-5.09,3.76,0,.55,1.64,3.56,1.64,3.56h0Z"></path></svg>') + '"/>' +
       '<div class="unpub-inner">' +
         '<div class="unpub-brand">Basware</div>' +
         '<div class="unpub-title">The Workshop Room</div>' +
@@ -149,7 +147,7 @@ function renderSchedule(slots, publishedAt) {
       '<div class="page-header">' +
         '<div class="header-brand">Basware · HBR Denver</div>' +
         '<div class="header-title">The Workshop Room</div>' +
-        '<div class="header-sub">The Deals That Make It All Just Happen · July 2026</div>' +
+        '<div class="header-sub">The deals that make it all just happen · July 2026</div>' +
       '</div>' +
       '<div class="page-body">' +
         slotsHTML +
