@@ -309,7 +309,16 @@ function showFacboard() { currentView="facboard"; spotlightGroup=""; renderFacbo
 function showGroupView(){ currentView="groupview"; gvSelected=""; renderGroupView(); }
 function rerenderCurrentView() {
   if (currentView==="facboard")  renderFacboard();
-  if (currentView==="groupview") renderGroupView();
+  if (currentView==="groupview") {
+    // Save whatever the user is currently typing before the DOM is rebuilt
+    ["exec","biz","ops","cap"].forEach(function(sid) {
+      var inp = document.getElementById("gv-input-"+sid);
+      var ctx = document.getElementById("gv-ctx-"+sid);
+      if (inp) gvDraftText[sid] = inp.value;
+      if (ctx) gvDraftCtx[sid]  = ctx.value;
+    });
+    renderGroupView();
+  }
   if (spotlightGroup) renderSpotlightOverlay();
 }
 
@@ -546,6 +555,8 @@ function renderSpotlightOverlay() {
 
 // ── GROUP VIEW ────────────────────────────────────────────────────────────
 var gvSelected = "";
+var gvDraftText = {}; // stageId -> current typed value
+var gvDraftCtx  = {}; // stageId -> current context typed value
 
 function renderGroupView() {
   var app = document.getElementById("app");
@@ -615,6 +626,20 @@ function renderGroupView() {
         '<div class="gv-priority-group">'+esc(g.name)+' · Work top-down to complete your chain</div>' +
       '</div>'+stagesHTML+'</div>' +
     doneBar+'</div>';
+
+  // Restore any in-progress text that was typed before Firebase triggered a re-render
+  ["exec","biz","ops","cap"].forEach(function(sid) {
+    var inp = document.getElementById("gv-input-"+sid);
+    var ctx = document.getElementById("gv-ctx-"+sid);
+    var btn = document.getElementById("gv-btn-"+sid);
+    if (inp && gvDraftText[sid]) {
+      inp.value = gvDraftText[sid];
+      if (btn) btn.disabled = !inp.value.trim();
+    }
+    if (ctx && gvDraftCtx[sid]) {
+      ctx.value = gvDraftCtx[sid];
+    }
+  });
 }
 
 function selectGroup(gid) { gvSelected=gid; renderGroupView(); }
@@ -622,6 +647,7 @@ function selectGroup(gid) { gvSelected=gid; renderGroupView(); }
 function gvInputChange(stageId) {
   var input = document.getElementById("gv-input-"+stageId);
   var btn = document.getElementById("gv-btn-"+stageId);
+  if (input) { gvDraftText[stageId] = input.value; }
   if (btn) btn.disabled = !input.value.trim();
 }
 
@@ -643,6 +669,8 @@ function gvAdd(stageId) {
   });
   if (input) { input.value=""; var btn=document.getElementById("gv-btn-"+stageId); if(btn) btn.disabled=true; }
   if (ctxInput) ctxInput.value="";
+  gvDraftText[stageId] = "";
+  gvDraftCtx[stageId]  = "";
   saveState(Object.assign({}, appState, {groups:groups}));
 }
 
