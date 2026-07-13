@@ -133,12 +133,14 @@ function publishSchedule() {
 }
 
 // ── Fixed first 3 + pool of remaining 16 ─────────────────────────────────
-var FIXED_FIRST_3 = ["Ramsha Mardini", "Taylor Hess", "Kyle Flaherty"];
+var FIXED_FIRST_3 = ["Taylor Hess", "Kyle Flaherty", "Mara Miller"];
 
+// Ramsha fixed to Wednesday, Justin fixed to Tuesday
+// Neither appears here — handled separately in buildSchedule
 var REMAINING_POOL = [
   "Jason Palangio", "Charlie Rafferty", "Sara Abbadi", "Nick Kidd",
-  "Jay Wick", "Courtney Talcott", "Mara Miller", "Joe Hager",
-  "Maggie Smeltzer", "Luke Porter", "Justin Wade", "Paul Koscielski",
+  "Jay Wick", "Courtney Talcott", "Joe Hager",
+  "Maggie Smeltzer", "Luke Porter", "Paul Koscielski",
   "Dale Magoon", "Mike Segoviano", "Danette Carlucci", "Dean Burkus"
 ];
 
@@ -185,22 +187,35 @@ function renderPicker() {
 
 // ── BUILD SCHEDULE ────────────────────────────────────────────────────────
 function buildSchedule() {
+  // Shuffle the free pool (14 names)
   var shuffled = REMAINING_POOL.slice().sort(function(){ return Math.random() - 0.5; });
   var pool = shuffled.slice();
-  schedule = SLOTS.map(function(slot, i) {
-    return {
-      day: slot.day,
-      time: slot.time,
-      label: slot.label,
-      aes: i === 0 ? FIXED_FIRST_3.slice() : pool.splice(0, slot.count)
-    };
-  });
+
+  // Slot 0 (Monday 4:30): fixed — Taylor, Kyle, Mara
+  // Slot 1 (Tuesday 10am): 5 AEs — Justin guaranteed here (random position)
+  // Slot 2 (Tuesday 4pm):  5 AEs — random from pool
+  // Slot 3 (Wednesday 9am): 5 AEs — Ramsha guaranteed here (random position)
+
+  var slot1 = pool.splice(0, 4); // 4 from pool
+  slot1.splice(Math.floor(Math.random() * 5), 0, "Justin Wade"); // insert Justin at random position
+
+  var slot2 = pool.splice(0, 5);
+
+  var slot3 = pool.splice(0, 4); // 4 from pool
+  slot3.splice(Math.floor(Math.random() * 5), 0, "Ramsha Mardini"); // insert Ramsha at random position
+
+  schedule = [
+    { day:"Monday",    time:"4:30 PM",  label:"Session 1", aes: FIXED_FIRST_3.slice() },
+    { day:"Tuesday",   time:"10:00 AM", label:"Session 2", aes: slot1 },
+    { day:"Tuesday",   time:"4:00 PM",  label:"Session 3", aes: slot2 },
+    { day:"Wednesday", time:"9:00 AM",  label:"Session 4", aes: slot3 }
+  ];
 }
 
 // ── SHUFFLE ANIMATION ─────────────────────────────────────────────────────
 function startShuffle() {
   buildSchedule();
-  var allNames = FIXED_FIRST_3.concat(REMAINING_POOL);
+  var allNames = FIXED_FIRST_3.concat(["Justin Wade", "Ramsha Mardini"]).concat(REMAINING_POOL);
 
   var animEl = document.createElement("div");
   animEl.id = "shuffle-anim";
