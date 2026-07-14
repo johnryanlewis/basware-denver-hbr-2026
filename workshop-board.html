@@ -293,6 +293,21 @@ async function saveState(s) {
   catch(err) { console.error("Firebase write failed:", err); throw err; }
 }
 
+let rerenderTimer = null;
+let userIsFocused = false;
+
+// Pause re-renders while any input or textarea is focused
+document.addEventListener("focusin", e => {
+  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") {
+    userIsFocused = true;
+  }
+});
+document.addEventListener("focusout", e => {
+  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") {
+    userIsFocused = false;
+  }
+});
+
 onValue(STATE_REF, (snapshot) => {
   const data = snapshot.val();
   if (!data) {
@@ -307,9 +322,28 @@ onValue(STATE_REF, (snapshot) => {
   if (currentView === "loading") {
     document.getElementById("loading").classList.add("hidden");
     showChooser();
-  } else {
-    rerenderCurrentView();
+    return;
   }
+  // Debounce re-renders — batch rapid Firebase updates and skip if user
+  // is actively focused in any input or textarea
+  clearTimeout(rerenderTimer);
+  rerenderTimer = setTimeout(() => {
+    if (userIsFocused) {
+      // Snapshot current values before skipping
+      const active = document.activeElement;
+      if(active) {
+        if(active.classList.contains("exp-response-input") && active.dataset.noteid) {
+          responseDrafts[active.dataset.noteid] = active.value;
+        }
+        if(active.id === "part-note-text") partText = active.value;
+        if(active.id === "part-name-input") partName = active.value;
+      }
+      // Try again 1.5s later in case they're done typing
+      rerenderTimer = setTimeout(() => { if(!userIsFocused) rerenderCurrentView(); }, 1500);
+      return;
+    }
+    rerenderCurrentView();
+  }, 300);
 });
 
 // ── Routing ───────────────────────────────────────────────────────────────
