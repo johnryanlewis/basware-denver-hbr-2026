@@ -318,8 +318,25 @@ function showBoard()      { currentView="board"; showEditLanes=false; renderBoar
 function showParticipant(){ currentView="participant"; partSelectedLane=null; partSubmitted=false; partText=""; partColor="green"; renderParticipant(); }
 function rerenderCurrentView() {
   if(currentView==="board") renderBoard();
-  if(currentView==="participant") renderParticipant();
-  // If a lane is expanded, refresh it live as notes come in
+  if(currentView==="participant") {
+    // Snapshot whatever is currently typed before any re-render
+    const ta = document.getElementById("part-note-text");
+    if(ta) partText = ta.value;
+    const ni = document.getElementById("part-name-input");
+    if(ni) partName = ni.value;
+    // Only do a full re-render if they haven't selected a lane yet
+    // (i.e. just the lane picker is showing — safe to refresh counts)
+    // If they've selected a lane and are mid-entry, only refresh the lane
+    // picker section underneath without touching the form above
+    if(!partSelectedLane) {
+      renderParticipant();
+    } else {
+      // Silently update lane note counts in the picker below without
+      // destroying the form — just refresh the submit button state
+      const submitBtn = document.getElementById("btn-submit-note");
+      if(submitBtn && ta) submitBtn.disabled = !ta.value.trim();
+    }
+  }
   if(expandedLane) renderExpandedLane();
 }
 
