@@ -316,28 +316,29 @@ onValue(STATE_REF, (snapshot) => {
 function showChooser()    { currentView="chooser";     renderChooser(); }
 function showBoard()      { currentView="board"; showEditLanes=false; renderBoard(); }
 function showParticipant(){ currentView="participant"; partSelectedLane=null; partSubmitted=false; partText=""; partColor="green"; renderParticipant(); }
+var responseDrafts = {}; // noteId -> current typed response value
+
 function rerenderCurrentView() {
   if(currentView==="board") renderBoard();
   if(currentView==="participant") {
-    // Snapshot whatever is currently typed before any re-render
     const ta = document.getElementById("part-note-text");
     if(ta) partText = ta.value;
     const ni = document.getElementById("part-name-input");
     if(ni) partName = ni.value;
-    // Only do a full re-render if they haven't selected a lane yet
-    // (i.e. just the lane picker is showing — safe to refresh counts)
-    // If they've selected a lane and are mid-entry, only refresh the lane
-    // picker section underneath without touching the form above
     if(!partSelectedLane) {
       renderParticipant();
     } else {
-      // Silently update lane note counts in the picker below without
-      // destroying the form — just refresh the submit button state
       const submitBtn = document.getElementById("btn-submit-note");
       if(submitBtn && ta) submitBtn.disabled = !ta.value.trim();
     }
   }
-  if(expandedLane) renderExpandedLane();
+  if(expandedLane) {
+    // Snapshot all active response textareas before rebuilding the overlay
+    document.querySelectorAll(".exp-response-input").forEach(ta => {
+      if(ta.dataset.noteid) responseDrafts[ta.dataset.noteid] = ta.value;
+    });
+    renderExpandedLane();
+  }
 }
 
 // ── CHOOSER ───────────────────────────────────────────────────────────────
@@ -883,10 +884,17 @@ function renderExpandedLane() {
     };
   });
 
-  // Save response text as user types (debounced)
+  // Restore any in-progress response text typed before Firebase triggered a re-render
+  overlay.querySelectorAll(".exp-response-input").forEach(ta=>{
+    const nid = ta.dataset.noteid;
+    if(responseDrafts[nid] !== undefined) ta.value = responseDrafts[nid];
+  });
+
+  // Save response text as user types (debounced to Firebase) + keep local draft in sync
   overlay.querySelectorAll(".exp-response-input").forEach(ta=>{
     let debounce;
     ta.addEventListener("input",()=>{
+      responseDrafts[ta.dataset.noteid] = ta.value; // always save locally immediately
       clearTimeout(debounce);
       debounce=setTimeout(async()=>{
         const notes=appState.notes.map(n=>n.id===ta.dataset.noteid?{...n,response:ta.value}:n);
@@ -900,6 +908,7 @@ function renderExpandedLane() {
     btn.onclick=async()=>{
       const ta=overlay.querySelector(`.exp-response-input[data-noteid="${btn.dataset.noteid}"]`);
       const response=ta?.value?.trim()||"";
+      delete responseDrafts[btn.dataset.noteid]; // clear draft — it's been committed
       const notes=appState.notes.map(n=>n.id===btn.dataset.noteid?{...n,solved:true,response}:n);
       await saveState({...appState,notes});
     };
