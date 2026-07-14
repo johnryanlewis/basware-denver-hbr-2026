@@ -325,7 +325,12 @@ function rerenderCurrentView() {
     if(ta) partText = ta.value;
     const ni = document.getElementById("part-name-input");
     if(ni) partName = ni.value;
-    if(!partSelectedLane) {
+    // If they're actively typing in the note textarea, don't touch the DOM at all
+    const activeEl = document.activeElement;
+    const typingInForm = activeEl && (activeEl.id === "part-note-text" || activeEl.id === "part-name-input");
+    if(typingInForm) {
+      // Completely leave them alone
+    } else if(!partSelectedLane) {
       renderParticipant();
     } else {
       const submitBtn = document.getElementById("btn-submit-note");
@@ -333,11 +338,21 @@ function rerenderCurrentView() {
     }
   }
   if(expandedLane) {
-    // Snapshot all active response textareas before rebuilding the overlay
-    document.querySelectorAll(".exp-response-input").forEach(ta => {
-      if(ta.dataset.noteid) responseDrafts[ta.dataset.noteid] = ta.value;
-    });
-    renderExpandedLane();
+    // Check if any response textarea is currently focused — if so, don't
+    // rebuild the overlay at all. Just snapshot the value and leave them alone.
+    const activeEl = document.activeElement;
+    const typingInOverlay = activeEl && activeEl.classList.contains("exp-response-input");
+
+    if(typingInOverlay) {
+      // Just keep the draft safe — do not touch the DOM
+      if(activeEl.dataset.noteid) responseDrafts[activeEl.dataset.noteid] = activeEl.value;
+    } else {
+      // Safe to rebuild — snapshot all drafts first
+      document.querySelectorAll(".exp-response-input").forEach(ta => {
+        if(ta.dataset.noteid) responseDrafts[ta.dataset.noteid] = ta.value;
+      });
+      renderExpandedLane();
+    }
   }
 }
 
